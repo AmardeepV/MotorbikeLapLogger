@@ -1,0 +1,21 @@
+{
+    "ROS2.distro": "jazzy",
+    "python.autoComplete.extraPaths": [
+        "/home/levex/ros2_ws/install/servo_slider/lib/python3.12/site-packages",
+        "/home/levex/ros2_ws/install/micro_ros_msgs/lib/python3.12/site-packages",
+        "/home/levex/ros2_ws/install/gripper_bridge/lib/python3.12/site-packages",
+        "/home/levex/ros2_ws/install/fr5_bringup/lib/python3.12/site-packages",
+        "/home/levex/ros2_ws/install/data_plotter/lib/python3.12/site-packages",
+        "/opt/ros/jazzy/lib/python3.12/site-packages",
+        "/home/levex/Desktop/Fairino/fairino-python-sdk-main/linux"
+    ],
+    "python.analysis.extraPaths": [
+        "/home/levex/ros2_ws/install/servo_slider/lib/python3.12/site-packages",
+        "/home/levex/ros2_ws/install/micro_ros_msgs/lib/python3.12/site-packages",
+        "/home/levex/ros2_ws/install/gripper_bridge/lib/python3.12/site-packages",
+        "/home/levex/ros2_ws/install/fr5_bringup/lib/python3.12/site-packages",
+        "/home/levex/ros2_ws/install/data_plotter/lib/python3.12/site-packages",
+        "/opt/ros/jazzy/lib/python3.12/site-packages",
+        "/home/levex/Desktop/Fairino/fairino-python-sdk-main/linux"
+    ]
+}
