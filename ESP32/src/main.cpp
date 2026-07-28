@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include "Button.h"
 #include "LapManager.h"
+#include "PacketParser.h"
 
 Button button(
     14,
@@ -8,6 +9,7 @@ Button button(
     3000);   // long press
 
 LapManager lapManager;
+PacketParser packetParser;
 uint32_t lastPrint = 0;
 void setup()
 {
