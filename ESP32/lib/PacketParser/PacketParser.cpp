@@ -5,11 +5,6 @@ PacketParser::PacketParser()
 {
 }
 
-const char* PacketParser::getStateName() const
-{
-    return _state;
-}
-
 const PacketParser::TelemetryData& PacketParser::getTelemetry() const
 {
     return _telemetry;
@@ -27,6 +22,7 @@ bool PacketParser::processByte(uint8_t byte)
             _state = State::WaitingForSOF2;
         }
         break;
+
     case State::WaitingForSOF2:
         if(byte == SOF2)
         {
@@ -59,7 +55,7 @@ bool PacketParser::processByte(uint8_t byte)
 
     case State::WaitingForLength:
         _expectedLength = byte;
-        if(byte > sizeof(_buffer))
+        if(byte < MIN_PACKET_LENGTH || byte > sizeof(_buffer))
         {
             reset();
             break;
@@ -77,29 +73,44 @@ bool PacketParser::processByte(uint8_t byte)
         if(_writeIndex == _expectedLength)
         {
             uint16_t calculatedCRC = calculateCRC();
-            uint16_t receivedCRC;
+            uint16_t receivedCRC    ;
             memcpy(&receivedCRC,&_buffer[_expectedLength - 2],sizeof(receivedCRC));
 
-            if(calculateCRC == receivedCRC)
+            if(calculatedCRC == receivedCRC)
             {
+                _readIndex = 4;
+                
+                read(_telemetry.timestamp);
+                read(_telemetry.qw);
+                read(_telemetry.qx);
+                read(_telemetry.qy);
+                read(_telemetry.qz);
+                read(_telemetry.accelX);
+                read(_telemetry.accelY);
+                read(_telemetry.accelZ);
+                read(_telemetry.gyroX);
+                read(_telemetry.gyroY);
+                read(_telemetry.gyroZ);
+
+                reset();
                 return true;
+
             }
             else{
                 reset();
             }
-            }
         }
         break;
-
     default:
         break;
     }
-    return false;   
+    return false;  
 }
 
 uint16_t PacketParser::calculateCRC()
 {
     uint16_t crc = 0xFFFF;
+
     for(uint8_t i=0; i < (_expectedLength -2); i++)
     {
         uint8_t currentByte = _buffer[i];

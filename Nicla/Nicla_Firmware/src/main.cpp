@@ -1,8 +1,11 @@
 #include <Arduino.h>
 #include "Orientation.h"
+#include "TelemetryPacket.h"
 
 
 OrientationSensor orientationSensor;
+TelemetryPacket telemetryPacket;
+
 uint32_t lastPrint = 0;
 int sampleCount = 0;
 
@@ -24,49 +27,58 @@ void loop()
 
     if(orientationSensor.update())
     {
-        sampleCount += 1;
+        // sampleCount += 1;
         
         if(now - lastPrint >= 1000)
         {
-        Serial.println("------------------------------------");
-        Serial.print("Sample count is: ");
-        Serial.println(sampleCount);
+            telemetryPacket.build(orientationSensor.getOrientation());
+            const uint8_t* packet = telemetryPacket.getBuffer();
 
-        const auto& data = orientationSensor.getOrientation();
+            for (uint8_t i = 0; i < telemetryPacket.getLength(); i++)
+            {
+                Serial.print(packet[i], HEX);
+                Serial.print(' ');
+            }
+            Serial.println(" ");
+        // Serial.println("------------------------------------");
+        // Serial.print("Sample count is: ");
+        // Serial.println(sampleCount);
 
-        Serial.print("Time: ");
-        Serial.println(data.timestamp);
-        Serial.println();
-        Serial.println("Orientation data: ");
-        Serial.println();
-        Serial.print("roll: ");
-        Serial.println(data.roll);
-        Serial.print("pitch: ");
-        Serial.println(data.pitch);
-        Serial.print("yaw: ");
-        Serial.println(data.yaw);
-        Serial.println();
-        Serial.print("Qx: ");
-        Serial.println(data.qx);
-        Serial.print("Qy: ");
-        Serial.println(data.qy);
-        Serial.print("Qz: ");
-        Serial.println(data.qz);
-        Serial.print("Qw: ");
-        Serial.println(data.qw);
+        // const auto& data = orientationSensor.getOrientation();
 
-        Serial.println();
-        Serial.println("Accelerometer: ");
-        Serial.println();
+        // Serial.print("Time: ");
+        // Serial.println(data.timestamp);
+        // Serial.println();
+        // Serial.println("Orientation data: ");
+        // Serial.println();
+        // Serial.print("roll: ");
+        // Serial.println(data.roll);
+        // Serial.print("pitch: ");
+        // Serial.println(data.pitch);
+        // Serial.print("yaw: ");
+        // Serial.println(data.yaw);
+        // Serial.println();
+        // Serial.print("Qx: ");
+        // Serial.println(data.qx);
+        // Serial.print("Qy: ");
+        // Serial.println(data.qy);
+        // Serial.print("Qz: ");
+        // Serial.println(data.qz);
+        // Serial.print("Qw: ");
+        // Serial.println(data.qw);
 
-        Serial.print("acclX: ");
-        Serial.println(data.accelX);
-        Serial.print("acclY: ");
-        Serial.println(data.accelY);
-        Serial.print("acclZ: ");
-        Serial.println(data.accelZ);
+        // Serial.println();
+        // Serial.println("Accelerometer: ");
+        // Serial.println();
+
+        // Serial.print("acclX: ");
+        // Serial.println(data.accelX);
+        // Serial.print("acclY: ");
+        // Serial.println(data.accelY);
+        // Serial.print("acclZ: ");
+        // Serial.println(data.accelZ);
         
-        sampleCount = 0;
+        // sampleCount = 0;
         lastPrint = now;
         }
     }
