@@ -92,6 +92,8 @@ bool PacketParser::processByte(uint8_t byte)
                 read(_telemetry.gyroY);
                 read(_telemetry.gyroZ);
 
+                _packetLength = _expectedLength;
+
                 reset();
                 return true;
 
@@ -138,4 +140,14 @@ void PacketParser::reset()
     _writeIndex = 0;
     _readIndex = 0;
     _expectedLength = 0;
+}
+
+const uint8_t* PacketParser::getPacket() const
+{
+    return _buffer;
+}
+
+uint8_t PacketParser::getPacketLength() const
+{
+    return _packetLength;
 }

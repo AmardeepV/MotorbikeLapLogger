@@ -28,6 +28,8 @@ class PacketParser
 
         bool processByte(uint8_t byte);
         const TelemetryData& getTelemetry() const;
+        const uint8_t* getPacket() const;
+        uint8_t getPacketLength() const;
     
     private:
 
@@ -52,6 +54,7 @@ class PacketParser
         uint8_t _writeIndex{};
         uint8_t _readIndex{};
         uint8_t _expectedLength{};
+        uint8_t _packetLength{};
 
         TelemetryData _telemetry{};
 
