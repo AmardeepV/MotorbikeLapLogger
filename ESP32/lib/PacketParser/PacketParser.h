@@ -47,7 +47,6 @@ class PacketParser
         static constexpr uint8_t SOF1 = 0xAA;
         static constexpr uint8_t SOF2 = 0x55;
         static constexpr uint8_t VERSION = 0x01;
-        static constexpr uint16_t CRC_POLYNOMIAL = 0x1021;
         static constexpr uint8_t MIN_PACKET_LENGTH = 50;
 
         uint8_t _buffer[64]{};
@@ -58,7 +57,6 @@ class PacketParser
 
         TelemetryData _telemetry{};
 
-        uint16_t calculateCRC();
         void reset();
 
         template<typename T>

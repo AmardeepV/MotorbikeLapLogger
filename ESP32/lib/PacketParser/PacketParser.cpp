@@ -1,5 +1,6 @@
 #include"PacketParser.h"
 #include <cstring>
+#include "CRC.h"
 
 PacketParser::PacketParser()
 {
@@ -72,7 +73,7 @@ bool PacketParser::processByte(uint8_t byte)
         _writeIndex ++;
         if(_writeIndex == _expectedLength)
         {
-            uint16_t calculatedCRC = calculateCRC();
+            uint16_t calculatedCRC = CRC::calculateCRC(_buffer,_expectedLength-2 );
             uint16_t receivedCRC    ;
             memcpy(&receivedCRC,&_buffer[_expectedLength - 2],sizeof(receivedCRC));
 
@@ -107,31 +108,6 @@ bool PacketParser::processByte(uint8_t byte)
         break;
     }
     return false;  
-}
-
-uint16_t PacketParser::calculateCRC()
-{
-    uint16_t crc = 0xFFFF;
-
-    for(uint8_t i=0; i < (_expectedLength -2); i++)
-    {
-        uint8_t currentByte = _buffer[i];
-        crc ^= (uint16_t)currentByte << 8;
-
-        for (uint8_t bit = 0; bit < 8; bit++)
-        {
-            if (crc & 0x8000)
-            {
-                crc <<= 1;
-                crc ^= CRC_POLYNOMIAL;
-            }
-            else
-            {
-                crc <<= 1;
-            }
-        }
-    }
-    return crc;
 }
 
 void PacketParser::reset()

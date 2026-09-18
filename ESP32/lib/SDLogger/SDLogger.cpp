@@ -34,6 +34,28 @@ bool SDLogger::writePacket(const uint8_t* packet,
 
     return true;
 }
+
+bool SDLogger::writeMetadata(const uint8_t* data, size_t length)
+{
+    if (!_isLogging)
+    {
+        return false;
+    }
+
+    size_t written = _file.write(data, length);
+
+    if (written != length)
+    {
+        Serial.print("SD write failed: expected ");
+        Serial.print(length);
+        Serial.print(", wrote ");
+        Serial.println(written);
+
+        return false;
+    }
+
+    return true;
+}
 bool SDLogger::isLogging() const
 {
     return _isLogging;

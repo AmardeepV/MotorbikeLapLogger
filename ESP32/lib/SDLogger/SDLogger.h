@@ -11,6 +11,7 @@ class SDLogger
         bool startLogging(uint32_t sessionNumber);
         bool writePacket(const uint8_t* packet,
                      uint8_t length);
+        bool writeMetadata(const uint8_t* data, size_t length);
 
         void stopLogging();
 
