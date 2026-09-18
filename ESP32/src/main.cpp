@@ -3,16 +3,29 @@
 #include "SDLogger.h"
 #include "LapManager.h"
 #include "Button.h"
+#include "MetadataRecord.h"
+// #include "CRC.h"
 
 PacketParser parser;
 SDLogger logger;
 LapManager lapManager;
+MetadataRecord metadata;    
 Button button(
     14,
     30,      // debounce
     3000);  
 
 uint32_t sessionNumber = 1;
+uint32_t latestTelemetryTimestamp{};
+
+// Test data
+// uint8_t testData[] = {
+//     0xAB, 0xCD, 0x01, 0x01,
+//     0xD0, 0x6C, 0x00, 0x00,
+//     0x01, 0x00,
+//     0x01, 0x00,
+//     0x00, 0x00
+// };
 
 void setup()
 {
@@ -33,6 +46,13 @@ void setup()
     }
 
     Serial.println("System ready");
+
+
+    // uint16_t calculated = CRC::calculateCRC(testData, 14);
+
+    // Serial.print("Calculated CRC: 0x");
+    // Serial.println(calculated, HEX);
+
 }
 void handleLapEvent(LapManager::Event event)
 {
@@ -50,6 +70,22 @@ void handleLapEvent(LapManager::Event event)
                 {
                     Serial.println("Failed to start logging");
                 }
+                else
+                {
+                    metadata.build(
+                        MetadataRecord::Type::SessionStart,
+                        latestTelemetryTimestamp,
+                        sessionNumber,
+                        1
+                    );
+
+                    if (!logger.writeMetadata(
+                            metadata.data(),
+                            metadata.size()))
+                    {
+                        Serial.println("ERROR: SessionStart metadata was not written");
+                    }
+                }   
             }
 
             Serial.print("Lap ");
@@ -67,10 +103,37 @@ void handleLapEvent(LapManager::Event event)
             Serial.print("Lap ");
             Serial.print(lapManager.getCurrentLap());
             Serial.println(" started");
+            metadata.build(
+                        MetadataRecord::Type::LapStart,
+                        latestTelemetryTimestamp,
+                        sessionNumber,
+                        lapManager.getCurrentLap()
+                    );
+
+            if (!logger.writeMetadata(
+                    metadata.data(),
+                    metadata.size()))
+            {
+                Serial.println("ERROR: LapStart metadata was not written");
+            }
 
             break;
 
         case LapManager::Event::LoggingStopped:
+
+            metadata.build(
+                MetadataRecord::Type::SessionEnd,
+                latestTelemetryTimestamp,
+                sessionNumber,
+                lapManager.getCurrentLap()
+            );
+
+            if (!logger.writeMetadata(
+                    metadata.data(),
+                    metadata.size()))
+            {
+                Serial.println("ERROR: SessionEnd metadata was not written");
+            }
 
             logger.stopLogging();
 
@@ -106,7 +169,8 @@ void loop()
         uint8_t byte = Serial2.read();
 
         if (parser.processByte(byte))
-        {
+        {   
+            latestTelemetryTimestamp = parser.getTelemetry().timestamp;
             if (lapManager.isLogging())
             {
                 if (!logger.writePacket(
