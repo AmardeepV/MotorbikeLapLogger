@@ -4,12 +4,14 @@
 #include "LapManager.h"
 #include "Button.h"
 #include "MetadataRecord.h"
+#include "LeanAngle.h"
 // #include "CRC.h"
 
 PacketParser parser;
 SDLogger logger;
 LapManager lapManager;
-MetadataRecord metadata;    
+MetadataRecord metadata;
+LeanAngle lean;    
 Button button(
     14,
     30,      // debounce
@@ -31,7 +33,16 @@ void setup()
 {
     Serial.begin(115200);
     button.begin();
-
+    /*
+    float angle = lean.calculateLean(
+        0.9858f,
+        0.1666f,
+        -0.0149f,
+        -0.0079f
+    );
+    Serial.print("Lean angle is: ");
+    Serial.println(angle);
+    */
     Serial2.begin(
         115200,
         SERIAL_8N1,
@@ -153,6 +164,13 @@ void loop()
 {
 
     button.update();
+
+    float angle = lean.calculateLean(parser.getTelemetry().qw,
+                                     parser.getTelemetry().qx,
+                                     parser.getTelemetry().qy,
+                                     parser.getTelemetry().qz);
+    Serial.print("Lean angle is: ");
+    Serial.println(angle);
 
     Button::Event buttonEvent = button.getEvent();
 

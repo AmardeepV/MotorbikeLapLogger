@@ -26,5 +26,15 @@ void loop()
         telemetryPacket.getBuffer(),
         telemetryPacket.getLength()
     );
+    const auto& orientation = orientationSensor.getOrientation();
+
+    Serial.print("Roll: ");
+    Serial.print(orientation.roll, 2);
+
+    Serial.print(" | Pitch: ");
+    Serial.print(orientation.pitch, 2);
+
+    Serial.print(" | Yaw: ");
+    Serial.println(orientation.yaw, 2);
 }
 }
