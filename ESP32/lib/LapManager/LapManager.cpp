@@ -15,7 +15,7 @@ void LapManager::update(Command command, uint32_t now)
     switch(_state)
     {
         case LapState::Idle:
-            if(event == Button::Event::ShortPress)
+            if(command == Command::Lap)
             {
                 startLap(now);
                 _event = Event::LapStarted;
@@ -23,13 +23,13 @@ void LapManager::update(Command command, uint32_t now)
             break;
 
         case LapState::Running:
-            if(event == Button::Event::ShortPress)
+            if(command == Command::Lap)
             {
                 finishLap(now);
                 _event = Event::LapFinished;
                 startLap(now);
             }
-            else if(event == Button::Event::LongPress)
+            else if(command == Command::Stop)
             {
                 finishLap(now);
                 _event = Event::LoggingStopped;
