@@ -145,18 +145,32 @@ void loop()
                                      parser.getTelemetry().qx,
                                      parser.getTelemetry().qy,
                                      parser.getTelemetry().qz);
-    Serial.print("Lean angle is: ");
-    Serial.println(angle);
+    //Serial.print("Lean angle is: ");
+    //Serial.println(angle);
 
     Button::Event buttonEvent = button.getEvent();
 
     if (buttonEvent != Button::Event::None)
     {
-        lapManager.update(buttonEvent, millis());
+        LapManager::Command command = LapManager::Command::None;
 
-        LapManager::Event lapEvent = lapManager.getEvent();
+        if (buttonEvent == Button::Event::ShortPress)
+        {
+            command = LapManager::Command::Lap;
+        }
+        else if (buttonEvent == Button::Event::LongPress)
+        {
+            command = LapManager::Command::Stop;
+        }
 
-        handleLapEvent(lapEvent);
+        if (command != LapManager::Command::None)
+        {
+            lapManager.update(command, millis());
+
+            LapManager::Event lapEvent = lapManager.getEvent();
+
+            handleLapEvent(lapEvent);
+        }
     }
     while (Serial2.available())
     {
