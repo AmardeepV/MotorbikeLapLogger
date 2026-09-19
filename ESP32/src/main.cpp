@@ -5,12 +5,14 @@
 #include "Button.h"
 #include "MetadataRecord.h"
 #include "LeanAngle.h"
+#include "BLEManager.h"
 
 PacketParser parser;
 SDLogger logger;
 LapManager lapManager;
 MetadataRecord metadata;
 LeanAngle lean;    
+BLEManager ble;
 Button button(
     14,
     30,      // debounce
@@ -24,7 +26,7 @@ void setup()
 {
     Serial.begin(115200);
     button.begin();
-
+    ble.begin();
     Serial2.begin(
         115200,
         SERIAL_8N1,
@@ -148,6 +150,7 @@ void loop()
     //Serial.print("Lean angle is: ");
     //Serial.println(angle);
 
+    // Button 
     Button::Event buttonEvent = button.getEvent();
 
     if (buttonEvent != Button::Event::None)
@@ -171,6 +174,31 @@ void loop()
 
             handleLapEvent(lapEvent);
         }
+    }
+
+    // Bluetooth
+    BLEManager::Command bleCommand = ble.getCommand();
+
+    if (bleCommand != BLEManager::Command::None)
+    {
+        if (bleCommand == BLEManager::Command::Lap)
+        {
+            lapManager.update(
+                LapManager::Command::Lap,
+                millis()
+            );
+        }
+        else if (bleCommand == BLEManager::Command::Stop)
+        {
+            lapManager.update(
+                LapManager::Command::Stop,
+                millis()
+            );
+        }
+
+        LapManager::Event lapEvent = lapManager.getEvent();
+
+        handleLapEvent(lapEvent);
     }
     while (Serial2.available())
     {
