@@ -143,13 +143,6 @@ void loop()
 
     button.update();
 
-    float angle = lean.calculateLean(parser.getTelemetry().qw,
-                                     parser.getTelemetry().qx,
-                                     parser.getTelemetry().qy,
-                                     parser.getTelemetry().qz);
-    //Serial.print("Lean angle is: ");
-    //Serial.println(angle);
-
     // Button 
     Button::Event buttonEvent = button.getEvent();
 
@@ -195,6 +188,12 @@ void loop()
                 millis()
             );
         }
+        else if (bleCommand == BLEManager::Command::Calibrate)
+        {
+            lean.startCalibration();
+
+            Serial.println("Calibration started");
+        }
 
         LapManager::Event lapEvent = lapManager.getEvent();
 
@@ -207,6 +206,17 @@ void loop()
         if (parser.processByte(byte))
         {   
             latestTelemetryTimestamp = parser.getTelemetry().timestamp;
+
+            float rawAngle = lean.calculateLean(
+                parser.getTelemetry().qw,
+                parser.getTelemetry().qx,
+                parser.getTelemetry().qy,
+                parser.getTelemetry().qz
+            );
+
+            lean.updateCalibration(rawAngle);
+        
+
             if (lapManager.isLogging())
             {
                 if (!logger.writePacket(

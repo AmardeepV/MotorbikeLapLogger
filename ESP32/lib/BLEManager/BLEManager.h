@@ -10,7 +10,8 @@ public:
     {
         None,
         Lap,
-        Stop
+        Stop,
+        Calibrate
     };
 
     bool begin();

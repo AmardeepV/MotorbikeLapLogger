@@ -32,6 +32,10 @@ public:
         {
             _manager.setCommand(BLEManager::Command::Stop);
         }
+        else if (value == "CALIBRATE")
+        {
+            _manager.setCommand(BLEManager::Command::Calibrate);
+        }
     }
 
 private:
