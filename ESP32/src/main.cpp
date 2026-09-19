@@ -5,7 +5,6 @@
 #include "Button.h"
 #include "MetadataRecord.h"
 #include "LeanAngle.h"
-// #include "CRC.h"
 
 PacketParser parser;
 SDLogger logger;
@@ -20,29 +19,12 @@ Button button(
 uint32_t sessionNumber = 1;
 uint32_t latestTelemetryTimestamp{};
 
-// Test data
-// uint8_t testData[] = {
-//     0xAB, 0xCD, 0x01, 0x01,
-//     0xD0, 0x6C, 0x00, 0x00,
-//     0x01, 0x00,
-//     0x01, 0x00,
-//     0x00, 0x00
-// };
 
 void setup()
 {
     Serial.begin(115200);
     button.begin();
-    /*
-    float angle = lean.calculateLean(
-        0.9858f,
-        0.1666f,
-        -0.0149f,
-        -0.0079f
-    );
-    Serial.print("Lean angle is: ");
-    Serial.println(angle);
-    */
+
     Serial2.begin(
         115200,
         SERIAL_8N1,
@@ -57,12 +39,6 @@ void setup()
     }
 
     Serial.println("System ready");
-
-
-    // uint16_t calculated = CRC::calculateCRC(testData, 14);
-
-    // Serial.print("Calculated CRC: 0x");
-    // Serial.println(calculated, HEX);
 
 }
 void handleLapEvent(LapManager::Event event)
