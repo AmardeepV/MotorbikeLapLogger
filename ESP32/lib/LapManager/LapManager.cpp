@@ -1,5 +1,5 @@
 #include "LapManager.h"
-#include "Button.h"
+
 
 LapManager::LapManager()
     : _currentLapNumber(0),
@@ -10,7 +10,7 @@ LapManager::LapManager()
 {
 } 
 
-void LapManager::update(Button::Event event, uint32_t now)
+void LapManager::update(Command command, uint32_t now)
 {
     switch(_state)
     {
