@@ -22,6 +22,7 @@ uint32_t sessionNumber = 1;
 uint32_t latestTelemetryTimestamp{};
 
 int temp_count = 1;
+bool previousCalibrationState = false;
 
 void setup()
 {
@@ -191,9 +192,29 @@ void loop()
         }
         else if (bleCommand == BLEManager::Command::Calibrate)
         {
-            lean.startCalibration();
-            temp_count = 2;
-            Serial.println("Calibration started");
+            if (lapManager.isLogging())
+            {
+                Serial.println(
+                    "Calibration rejected: logging is active"
+                );
+                ble.sendStatus("CALIBRATION_REJECTED_LOGGING");
+            }
+            else if (lean.isCalibrating())
+            {
+                Serial.println(
+                    "Calibration already in progress"
+                );
+                ble.sendStatus("CALIBRATION_REJECTED_LOGGING");
+            }
+            else
+            {
+                lean.startCalibration();
+
+                temp_count = 2;
+
+                Serial.println("Calibration started");
+                ble.sendStatus("CALIBRATION_STARTED");
+            }
         }
 
         LapManager::Event lapEvent = lapManager.getEvent();
@@ -224,6 +245,29 @@ void loop()
             }
 
             lean.updateCalibration(rawAngle);
+            bool currentCalibrationState = lean.isCalibrating();
+
+            if (previousCalibrationState && !currentCalibrationState)
+            {
+                Serial.println("Calibration finished");
+
+                ble.sendStatus("CALIBRATION_COMPLETE");
+            }
+
+            previousCalibrationState = currentCalibrationState;
+
+            uint16_t sampleCount =
+                lean.getCalibrationSampleCount();
+
+            if (lean.isCalibrating() &&
+                sampleCount > 0 &&
+                sampleCount % 25 == 0)
+            {
+                Serial.print("Calibration: ");
+                Serial.print(sampleCount);
+                Serial.print("/");
+                Serial.println(lean.getCalibrationSampleTarget());
+            }
 
             float correctedAngle = lean.calculateLean(
                 parser.getTelemetry().qw,

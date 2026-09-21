@@ -11,6 +11,11 @@ static constexpr char SERVICE_UUID[] =
 static constexpr char COMMAND_UUID[] =
     "6e400002-b5a3-f393-e0a9-e50e24dcca9e";
 
+static constexpr char STATUS_UUID[] =
+    "6e400003-b5a3-f393-e0a9-e50e24dcca9e";
+
+static BLECharacteristic* statusCharacteristic = nullptr;
+
 class CommandCallbacks : public BLECharacteristicCallbacks
 {
 public:
@@ -56,6 +61,13 @@ bool BLEManager::begin()
             COMMAND_UUID,
             BLECharacteristic::PROPERTY_WRITE
         );
+    
+    statusCharacteristic =
+        service->createCharacteristic(
+            STATUS_UUID,
+            BLECharacteristic::PROPERTY_READ |
+            BLECharacteristic::PROPERTY_NOTIFY
+        );
 
     commandCharacteristic->setCallbacks(
         new CommandCallbacks(*this)
@@ -87,4 +99,15 @@ BLEManager::Command BLEManager::getCommand()
     _command = Command::None;
 
     return command;
+}
+
+void BLEManager::sendStatus(const String& status)
+{
+    if (statusCharacteristic == nullptr)
+    {
+        return;
+    }
+
+    statusCharacteristic->setValue(status.c_str());
+    statusCharacteristic->notify();
 }

@@ -5,7 +5,6 @@
 class BLEManager
 {
 public:
-
     enum class Command
     {
         None,
@@ -19,7 +18,8 @@ public:
     Command getCommand();
     void setCommand(Command command);
 
-private:
+    void sendStatus(const String& status);
 
+private:
     Command _command{Command::None};
 };

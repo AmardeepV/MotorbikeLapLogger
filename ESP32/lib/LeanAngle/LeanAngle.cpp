@@ -40,6 +40,13 @@ void LeanAngle::updateCalibration(float rawAngle)
     _sampleSum += rawAngle;
     _sampleCount++;
 
+    if (_sampleCount % 50 == 0)
+    {
+        Serial.print("Calibration samples: ");
+        Serial.print(_sampleCount);
+        Serial.println("/200");
+    }
+
     if (_sampleCount >= CALIBRATION_SAMPLES)
     {
         _offset = _sampleSum / CALIBRATION_SAMPLES;
@@ -53,4 +60,19 @@ void LeanAngle::updateCalibration(float rawAngle)
 bool LeanAngle::isCalibrating() const
 {
     return _isCalibrating;
+}
+
+uint16_t LeanAngle::getCalibrationSampleCount() const
+{
+    return _sampleCount;
+}
+
+uint16_t LeanAngle::getCalibrationSampleTarget() const
+{
+    return CALIBRATION_SAMPLES;
+}
+
+float LeanAngle::getOffset() const
+{
+    return _offset;
 }
