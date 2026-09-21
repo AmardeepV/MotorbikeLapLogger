@@ -60,15 +60,15 @@ bool SDLogger::isLogging() const
 {
     return _isLogging;
 }
-bool SDLogger::startLogging(uint32_t sessionNumber)
+bool SDLogger::startLogging(uint32_t timestamp)
 {
     char filename[32];
 
     snprintf(
         filename,
         sizeof(filename),
-        "/SESSION%03lu.BIN",
-        static_cast<unsigned long>(sessionNumber)
+        "/LOG_%lu.BIN",
+        static_cast<unsigned long>(timestamp)
     );
 
     Serial.print("Opening: ");

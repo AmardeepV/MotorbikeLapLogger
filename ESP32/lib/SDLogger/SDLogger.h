@@ -8,7 +8,7 @@ class SDLogger
 {
     public:
         bool begin();
-        bool startLogging(uint32_t sessionNumber);
+        bool startLogging(uint32_t timestamp);
         bool writePacket(const uint8_t* packet,
                      uint8_t length);
         bool writeMetadata(const uint8_t* data, size_t length);

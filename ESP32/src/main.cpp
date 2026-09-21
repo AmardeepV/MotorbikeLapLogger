@@ -20,9 +20,14 @@ Button button(
 
 uint32_t sessionNumber = 1;
 uint32_t latestTelemetryTimestamp{};
+uint32_t lastTelemetryReceivedTime{};
+constexpr uint32_t TELEMETRY_TIMEOUT_MS = 2000;
 
 int temp_count = 1;
 bool previousCalibrationState = false;
+bool telemetryConnectionLost = false;
+
+
 
 void setup()
 {
@@ -53,11 +58,18 @@ void handleLapEvent(LapManager::Event event)
 
             if (lapManager.getCurrentLap() == 1)
             {
+                if (latestTelemetryTimestamp == 0)
+                {
+                    Serial.println("Cannot start logging: no telemetry received");
+                    lapManager.reset();
+                    return;
+                }
+
                 Serial.print("Session ");
                 Serial.print(sessionNumber);
                 Serial.println(" started");
 
-                if (!logger.startLogging(sessionNumber))
+                if (!logger.startLogging(latestTelemetryTimestamp))
                 {
                     Serial.println("Failed to start logging");
                     lapManager.reset();
@@ -234,6 +246,8 @@ void loop()
         if (parser.processByte(byte))
         {   
             latestTelemetryTimestamp = parser.getTelemetry().timestamp;
+            lastTelemetryReceivedTime = millis();
+            telemetryConnectionLost = false;
 
             float rawAngle = lean.calculateRawLean(
                 parser.getTelemetry().qw,
@@ -298,4 +312,12 @@ void loop()
             }
         }
     }
+    if (lapManager.isLogging() &&
+    lastTelemetryReceivedTime != 0 &&
+    millis() - lastTelemetryReceivedTime > TELEMETRY_TIMEOUT_MS &&
+    !telemetryConnectionLost)
+            {
+                Serial.println("WARNING: Telemetry connection lost");
+                telemetryConnectionLost = true;
+            }
 }
