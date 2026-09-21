@@ -1,3 +1,4 @@
+
 #include "BLEManager.h"
 
 #include <BLEDevice.h>
@@ -19,7 +20,6 @@ static BLECharacteristic* statusCharacteristic = nullptr;
 class CommandCallbacks : public BLECharacteristicCallbacks
 {
 public:
-
     CommandCallbacks(BLEManager& manager)
         : _manager(manager)
     {
@@ -44,7 +44,28 @@ public:
     }
 
 private:
+    BLEManager& _manager;
+};
 
+class ServerCallbacks : public BLEServerCallbacks
+{
+public:
+    ServerCallbacks(BLEManager& manager)
+        : _manager(manager)
+    {
+    }
+
+    void onConnect(BLEServer* server) override
+    {
+        _manager.onConnected();
+    }
+
+    void onDisconnect(BLEServer* server) override
+    {
+        _manager.onDisconnected();
+    }
+
+private:
     BLEManager& _manager;
 };
 
@@ -54,6 +75,10 @@ bool BLEManager::begin()
 
     BLEServer* server = BLEDevice::createServer();
 
+    server->setCallbacks(
+        new ServerCallbacks(*this)
+    );
+
     BLEService* service = server->createService(SERVICE_UUID);
 
     BLECharacteristic* commandCharacteristic =
@@ -61,13 +86,17 @@ bool BLEManager::begin()
             COMMAND_UUID,
             BLECharacteristic::PROPERTY_WRITE
         );
-    
+
     statusCharacteristic =
         service->createCharacteristic(
             STATUS_UUID,
             BLECharacteristic::PROPERTY_READ |
             BLECharacteristic::PROPERTY_NOTIFY
         );
+
+    statusCharacteristic->addDescriptor(
+        new BLE2902()
+    );
 
     commandCharacteristic->setCallbacks(
         new CommandCallbacks(*this)
@@ -108,6 +137,42 @@ void BLEManager::sendStatus(const String& status)
         return;
     }
 
-    statusCharacteristic->setValue(status.c_str());
-    statusCharacteristic->notify();
+    if (!_connected)
+    {
+        Serial.print("Cannot send BLE status: ");
+    }
+    else
+    {
+        statusCharacteristic->setValue(status.c_str());
+        statusCharacteristic->notify();
+
+        Serial.print("BLE status sent: ");
+    }
+
+    Serial.println(status);
+}
+
+void BLEManager::onConnected()
+{
+    _connected = true;
+
+    Serial.println("BLE client connected");
+
+    sendStatus("CONNECTED");
+}
+
+void BLEManager::onDisconnected()
+{
+    _connected = false;
+
+    Serial.println("BLE client disconnected");
+
+    Serial.println("Restarting BLE advertising...");
+
+    BLEDevice::startAdvertising();
+}
+
+bool BLEManager::isConnected() const
+{
+    return _connected;
 }

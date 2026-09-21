@@ -1,3 +1,4 @@
+
 #pragma once
 
 #include <Arduino.h>
@@ -20,6 +21,12 @@ public:
 
     void sendStatus(const String& status);
 
+    void onConnected();
+    void onDisconnected();
+
+    bool isConnected() const;
+
 private:
     Command _command{Command::None};
+    bool _connected{false};
 };
