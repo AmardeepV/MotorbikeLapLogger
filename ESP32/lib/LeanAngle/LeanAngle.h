@@ -4,7 +4,20 @@
 class LeanAngle
 {
     public:
-        float calculateLean(float qw,float qx,float qy, float qz);
+        float calculateRawLean(
+            float qw,
+            float qx,
+            float qy,
+            float qz
+        );
+
+        float calculateLean(
+            float qw,
+            float qx,
+            float qy,
+            float qz
+        );
+
         void startCalibration();
         void updateCalibration(float rawAngle);
         bool isCalibrating() const;

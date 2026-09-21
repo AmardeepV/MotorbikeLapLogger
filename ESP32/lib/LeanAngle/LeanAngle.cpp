@@ -1,12 +1,26 @@
 #include"LeanAngle.h"
 
-float LeanAngle::calculateLean(float qw, float qx, float qy, float qz)
+float LeanAngle::calculateRawLean(
+    float qw,
+    float qx,
+    float qy,
+    float qz)
 {
-    float angle = 2.0f * asin(qx);
+    float rawAngle = 2.0f * asin(qx);
+    rawAngle = rawAngle * 180.0f / PI;
 
-    angle = angle * 180.0f / PI;
+    return rawAngle;
+}
 
-    return angle - _offset;
+float LeanAngle::calculateLean(
+    float qw,
+    float qx,
+    float qy,
+    float qz)
+{
+    float rawAngle = calculateRawLean(qw, qx, qy, qz);
+
+    return rawAngle - _offset;
 }
 
 void LeanAngle::startCalibration()

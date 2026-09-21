@@ -21,6 +21,7 @@ Button button(
 uint32_t sessionNumber = 1;
 uint32_t latestTelemetryTimestamp{};
 
+int temp_count = 1;
 
 void setup()
 {
@@ -191,7 +192,7 @@ void loop()
         else if (bleCommand == BLEManager::Command::Calibrate)
         {
             lean.startCalibration();
-
+            temp_count = 2;
             Serial.println("Calibration started");
         }
 
@@ -199,6 +200,7 @@ void loop()
 
         handleLapEvent(lapEvent);
     }
+
     while (Serial2.available())
     {
         uint8_t byte = Serial2.read();
@@ -207,15 +209,34 @@ void loop()
         {   
             latestTelemetryTimestamp = parser.getTelemetry().timestamp;
 
-            float rawAngle = lean.calculateLean(
+            float rawAngle = lean.calculateRawLean(
                 parser.getTelemetry().qw,
                 parser.getTelemetry().qx,
                 parser.getTelemetry().qy,
                 parser.getTelemetry().qz
             );
+            if (temp_count == 1)
+            {
+                Serial.print("Raw angle: ");
+                Serial.print(rawAngle);
+                Serial.println();
+                temp_count = 0;
+            }
 
             lean.updateCalibration(rawAngle);
-        
+
+            float correctedAngle = lean.calculateLean(
+                parser.getTelemetry().qw,
+                parser.getTelemetry().qx,
+                parser.getTelemetry().qy,
+                parser.getTelemetry().qz
+            );
+            if (temp_count == 2 && !lean.isCalibrating())
+            {
+                Serial.print("Corrected angle: ");
+                Serial.println(correctedAngle);
+                temp_count = 0;
+            }
 
             if (lapManager.isLogging())
             {
