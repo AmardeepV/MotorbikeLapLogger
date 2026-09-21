@@ -28,6 +28,7 @@ class LapManager
         uint32_t getCurrentLap() const;
         uint32_t getLastLapTime() const;
         uint32_t getCurrentLapRunningTime(uint32_t now) const;
+        void reset();
 
     private:
         enum class LapState

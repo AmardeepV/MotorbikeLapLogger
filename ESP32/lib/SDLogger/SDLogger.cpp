@@ -77,10 +77,25 @@ bool SDLogger::startLogging(uint32_t sessionNumber)
     _file = SD.open(filename, FILE_WRITE);
 
     if (!_file)
-    {
-        Serial.println("Failed to open log file");
-        return false;
-    }
+        {
+            Serial.println("Failed to open log file");
+            Serial.println("Attempting SD reinitialization...");
+
+            if (!reinitialize())
+            {
+                return false;
+            }
+
+            Serial.println("Retrying file open...");
+
+            _file = SD.open(filename, FILE_WRITE);
+
+            if (!_file)
+            {
+                Serial.println("Failed to open log file after reinitialization");
+                return false;
+            }
+        }
 
     _isLogging = true;
 
@@ -116,3 +131,17 @@ void SDLogger::stopLogging()
 
     Serial.println("Logging stopped");
 }   
+
+bool SDLogger::reinitialize()
+{
+    SD.end();
+
+    if (!SD.begin(SD_CS_PIN))
+    {
+        Serial.println("SD reinitialization failed");
+        return false;
+    }
+
+    Serial.println("SD reinitialized");
+    return true;
+}

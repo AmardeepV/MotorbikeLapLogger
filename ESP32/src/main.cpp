@@ -60,6 +60,8 @@ void handleLapEvent(LapManager::Event event)
                 if (!logger.startLogging(sessionNumber))
                 {
                     Serial.println("Failed to start logging");
+                    lapManager.reset();
+                    return;
                 }
                 else
                 {
@@ -75,6 +77,9 @@ void handleLapEvent(LapManager::Event event)
                             metadata.size()))
                     {
                         Serial.println("ERROR: SessionStart metadata was not written");
+                        logger.stopLogging();
+                        lapManager.reset();
+                        return;
                     }
                 }   
             }
@@ -204,7 +209,7 @@ void loop()
                 Serial.println(
                     "Calibration already in progress"
                 );
-                ble.sendStatus("CALIBRATION_REJECTED_LOGGING");
+                ble.sendStatus("CALIBRATION_REJECTED_ALREADY_ACTIVE");
             }
             else
             {

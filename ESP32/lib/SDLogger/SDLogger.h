@@ -16,6 +16,7 @@ class SDLogger
         void stopLogging();
 
         bool isLogging() const;
+        bool reinitialize();
 
     private:
         File _file;

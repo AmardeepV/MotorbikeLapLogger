@@ -83,3 +83,11 @@ LapManager::Event LapManager::getEvent()
     _event = Event::None;
     return e;
 }
+
+void LapManager::reset()
+{
+    _state = LapState::Idle;
+    _currentLapNumber = 0;
+    _lapStartTime = 0; 
+    _event = Event::None;
+}
