@@ -22,10 +22,12 @@ uint32_t sessionNumber = 1;
 uint32_t latestTelemetryTimestamp{};
 uint32_t lastTelemetryReceivedTime{};
 constexpr uint32_t TELEMETRY_TIMEOUT_MS = 2000;
+constexpr uint32_t BLE_TELEMETRY_INTERVAL_MS = 100;
 
 int temp_count = 1;
 bool previousCalibrationState = false;
 bool telemetryConnectionLost = false;
+uint32_t lastBleTelemetrySentTime{};
 
 
 
@@ -77,6 +79,7 @@ void handleLapEvent(LapManager::Event event)
                 }
                 else
                 {
+                    lean.resetExtremes();
                     metadata.build(
                         MetadataRecord::Type::SessionStart,
                         latestTelemetryTimestamp,
@@ -93,12 +96,20 @@ void handleLapEvent(LapManager::Event event)
                         lapManager.reset();
                         return;
                     }
+
+                    ble.sendStatus(
+                        "SESSION_STARTED," + String(sessionNumber)
+                    );
                 }   
             }
 
             Serial.print("Lap ");
             Serial.print(lapManager.getCurrentLap());
             Serial.println(" started");
+
+            ble.sendStatus(
+                "LAP_STARTED," + String(lapManager.getCurrentLap())
+            );
 
             break;
 
@@ -125,6 +136,10 @@ void handleLapEvent(LapManager::Event event)
                 Serial.println("ERROR: LapStart metadata was not written");
             }
 
+            ble.sendStatus(
+                "LAP_STARTED," + String(lapManager.getCurrentLap())
+            );
+
             break;
 
         case LapManager::Event::LoggingStopped:
@@ -148,6 +163,10 @@ void handleLapEvent(LapManager::Event event)
             Serial.print("Session ");
             Serial.print(sessionNumber);
             Serial.println(" stopped");
+
+            ble.sendStatus(
+                "SESSION_STOPPED," + String(sessionNumber)
+            );
 
             sessionNumber++;
 
@@ -271,6 +290,7 @@ void loop()
                 Serial.println("Calibration finished");
 
                 ble.sendStatus("CALIBRATION_COMPLETE");
+                lean.resetExtremes();
             }
 
             previousCalibrationState = currentCalibrationState;
@@ -299,6 +319,24 @@ void loop()
                 Serial.print("Corrected angle: ");
                 Serial.println(correctedAngle);
                 temp_count = 0;
+            }
+
+            if (lapManager.isLogging())
+            {
+                lean.updateExtremes(correctedAngle);
+            }
+
+            const uint32_t now = millis();
+            if (now - lastBleTelemetrySentTime >= BLE_TELEMETRY_INTERVAL_MS)
+            {
+                ble.sendTelemetry(
+                    now,
+                    correctedAngle,
+                    lean.getMaximumLeftLean(),
+                    lean.getMaximumRightLean(),
+                    lapManager.isLogging()
+                );
+                lastBleTelemetrySentTime = now;
             }
 
             if (lapManager.isLogging())
