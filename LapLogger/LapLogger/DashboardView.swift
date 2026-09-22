@@ -19,16 +19,16 @@ struct DashboardView: View {
                 .padding(landscape ? 10 : 16)
             }
             .background(AppTheme.background)
-            .navigationTitle("LAP LOGGER")
+            //.navigationTitle("LAP LOGGER")
             .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    ConnectionPill(
-                        connected: viewModel.isConnected,
-                        title: viewModel.isConnected ? "CONNECTED" : "OFFLINE"
-                    )
-                }
-            }
+//            .toolbar {
+//                ToolbarItem(placement: .topBarTrailing) {
+//                    ConnectionPill(
+//                        connected: viewModel.isConnected,
+//                        title: viewModel.isConnected ? "CONNECTED" : "OFFLINE"
+//                    )
+//                }
+//            }
             .alert("Stop logging?", isPresented: $showStopConfirmation) {
                 Button("Cancel", role: .cancel) { }
                 Button("STOP", role: .destructive) { viewModel.stop() }
@@ -38,13 +38,95 @@ struct DashboardView: View {
         }
     }
 
+//    private var landscapeDashboard: some View {
+//        VStack(spacing: 10) {
+//            HStack(spacing: 10) {
+//                landscapeStatusCard
+//                    .frame(maxWidth: .infinity)
+//
+//                HStack(spacing: 8) {
+//                    controlButton(
+//                        "CAL",
+//                        symbol: "scope",
+//                        color: AppTheme.accent,
+//                        enabled: viewModel.canCalibrate,
+//                        action: viewModel.calibrate
+//                    )
+//                    .frame(width: 78)
+//
+//                    controlButton(
+//                        "LAP",
+//                        symbol: "flag.checkered",
+//                        color: AppTheme.healthy,
+//                        enabled: viewModel.canSendLap,
+//                        action: viewModel.lap
+//                    )
+//                    .frame(width: 78)
+//
+//                    controlButton(
+//                        "STOP",
+//                        symbol: "stop.fill",
+//                        color: AppTheme.danger,
+//                        enabled: viewModel.canStop,
+//                        action: { showStopConfirmation = true }
+//                    )
+//                    .frame(width: 78)
+//                }
+//            }
+//            .frame(height: 104)
+//
+//            HStack(spacing: 12) {
+//                LeanPanel(
+//                    side: .left,
+//                    telemetry: viewModel.bluetooth.telemetry,
+//                    available: viewModel.bluetooth.telemetryIsAvailable
+//                )
+//
+//                LeanPanel(
+//                    side: .right,
+//                    telemetry: viewModel.bluetooth.telemetry,
+//                    available: viewModel.bluetooth.telemetryIsAvailable
+//                )
+//            }
+//            .frame(maxHeight: .infinity)
+//
+//            DashboardCard {
+//                HStack(spacing: 10) {
+//                    Image(systemName: "antenna.radiowaves.left.and.right")
+//                        .foregroundStyle(viewModel.bluetooth.telemetryIsAvailable ? AppTheme.healthy : AppTheme.warning)
+//                    Text(viewModel.bluetooth.latestStatusMessage)
+//                        .font(.caption.weight(.semibold))
+//                        .foregroundStyle(.white)
+//                        .lineLimit(1)
+//                    Spacer(minLength: 4)
+////                    Text(telemetryDescription)
+////                        .font(.caption2.weight(.bold))
+////                        .foregroundStyle(viewModel.bluetooth.telemetryIsAvailable ? AppTheme.healthy : AppTheme.warning)
+////                        .lineLimit(1)
+//                }
+//            }
+//            .frame(height: 42)
+//        }
+//    }
+    
     private var landscapeDashboard: some View {
         VStack(spacing: 10) {
-            HStack(spacing: 10) {
-                landscapeStatusCard
-                    .frame(maxWidth: .infinity)
+            // Top status bar
+            landscapeStatusCard
+                .frame(height: 82)
 
-                HStack(spacing: 8) {
+            // Main three-column dashboard
+            HStack(spacing: 12) {
+                // LEFT LEAN PANEL
+                LeanPanel(
+                    side: .left,
+                    telemetry: viewModel.bluetooth.telemetry,
+                    available: viewModel.bluetooth.telemetryIsAvailable
+                )
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+
+                // CENTER CONTROLS
+                VStack(spacing: 14) {
                     controlButton(
                         "CAL",
                         symbol: "scope",
@@ -52,7 +134,6 @@ struct DashboardView: View {
                         enabled: viewModel.canCalibrate,
                         action: viewModel.calibrate
                     )
-                    .frame(width: 78)
 
                     controlButton(
                         "LAP",
@@ -61,7 +142,6 @@ struct DashboardView: View {
                         enabled: viewModel.canSendLap,
                         action: viewModel.lap
                     )
-                    .frame(width: 78)
 
                     controlButton(
                         "STOP",
@@ -70,74 +150,59 @@ struct DashboardView: View {
                         enabled: viewModel.canStop,
                         action: { showStopConfirmation = true }
                     )
-                    .frame(width: 78)
                 }
-            }
-            .frame(height: 104)
+                .frame(width: 92)
+                .frame(maxHeight: .infinity, alignment: .center)
 
-            HStack(spacing: 12) {
-                LeanPanel(
-                    side: .left,
-                    telemetry: viewModel.bluetooth.telemetry,
-                    available: viewModel.bluetooth.telemetryIsAvailable
-                )
-
+                // RIGHT LEAN PANEL
                 LeanPanel(
                     side: .right,
                     telemetry: viewModel.bluetooth.telemetry,
                     available: viewModel.bluetooth.telemetryIsAvailable
                 )
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
             .frame(maxHeight: .infinity)
-
-            DashboardCard {
-                HStack(spacing: 10) {
-                    Image(systemName: "antenna.radiowaves.left.and.right")
-                        .foregroundStyle(viewModel.bluetooth.telemetryIsAvailable ? AppTheme.healthy : AppTheme.warning)
-                    Text(viewModel.bluetooth.latestStatusMessage)
-                        .font(.caption.weight(.semibold))
-                        .foregroundStyle(.white)
-                        .lineLimit(1)
-                    Spacer(minLength: 4)
-                    Text(telemetryDescription)
-                        .font(.caption2.weight(.bold))
-                        .foregroundStyle(viewModel.bluetooth.telemetryIsAvailable ? AppTheme.healthy : AppTheme.warning)
-                        .lineLimit(1)
-                }
-            }
-            .frame(height: 42)
         }
     }
-
+    
     private var landscapeStatusCard: some View {
         DashboardCard {
-            VStack(alignment: .leading, spacing: 7) {
-                HStack(alignment: .center) {
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("LOGGER STATUS")
-                            .font(.caption2.weight(.bold))
-                            .foregroundStyle(.secondary)
-                        Text(primaryState)
-                            .font(.title3.weight(.bold))
-                            .foregroundStyle(stateColor)
-                    }
+            HStack(spacing: 18) {
+                // LOGGER STATUS section
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("LOGGER STATUS")
+                        .font(.caption2.weight(.bold))
+                        .foregroundStyle(.secondary)
 
-                    Spacer()
-
-                    Image(systemName: stateSymbol)
-                        .font(.title3)
+                    Text(primaryState)
+                        .font(.title3.weight(.bold))
                         .foregroundStyle(stateColor)
                 }
 
-                Divider().overlay(.white.opacity(0.12))
+                // SESSION
+                detail(
+                    "SESSION",
+                    viewModel.sessionNumber.map(String.init) ?? "—"
+                )
 
-                HStack {
-                    detail("SESSION", viewModel.sessionNumber.map(String.init) ?? "—")
-                    Spacer()
-                    detail("LAP", viewModel.currentLap > 0 ? String(viewModel.currentLap) : "—")
-                    Spacer()
-                    detail("CAL", viewModel.calibrationState == .inProgress ? "ACTIVE" : "READY")
-                }
+                // LAP
+                detail(
+                    "LAP",
+                    viewModel.currentLap > 0 ? String(viewModel.currentLap) : "—"
+                )
+
+                // CAL
+                detail(
+                    "CAL",
+                    viewModel.calibrationState == .inProgress ? "ACTIVE" : "READY"
+                )
+
+                Spacer()
+
+//                Image(systemName: stateSymbol)
+//                    .font(.title3)
+//                    .foregroundStyle(stateColor)
             }
         }
     }
@@ -167,7 +232,7 @@ struct DashboardView: View {
                 VStack(alignment: .leading, spacing: 9) {
                     HStack {
                         VStack(alignment: .leading, spacing: 3) {
-                            Text("LOGGER STATUS")
+                            Text("STATUS")
                                 .font(.caption2.weight(.bold))
                                 .foregroundStyle(.secondary)
                             Text(primaryState)
@@ -175,9 +240,9 @@ struct DashboardView: View {
                                 .foregroundStyle(stateColor)
                         }
                         Spacer()
-                        Image(systemName: stateSymbol)
-                            .font(.title2)
-                            .foregroundStyle(stateColor)
+//                        Image(systemName: stateSymbol)
+//                            .font(.title2)
+//                            .foregroundStyle(stateColor)
                     }
 
                     Divider().overlay(.white.opacity(0.12))
@@ -207,9 +272,9 @@ struct DashboardView: View {
                         .font(.subheadline.weight(.semibold))
                         .foregroundStyle(.white)
                         .lineLimit(2)
-                    Text(telemetryDescription)
-                        .font(.caption)
-                        .foregroundStyle(viewModel.bluetooth.telemetryIsAvailable ? AppTheme.healthy : AppTheme.warning)
+//                    Text(telemetryDescription)
+//                        .font(.caption)
+//                        .foregroundStyle(viewModel.bluetooth.telemetryIsAvailable ? AppTheme.healthy : AppTheme.warning)
                 }
             }
         }
@@ -270,19 +335,19 @@ struct DashboardView: View {
                 : viewModel.sessionState == .logging ? AppTheme.healthy : .white
     }
 
-    private var stateSymbol: String {
-        !viewModel.isConnected
-            ? "bolt.horizontal.circle"
-            : viewModel.calibrationState == .inProgress
-                ? "scope"
-                : viewModel.sessionState == .logging ? "flag.checkered" : "circle"
-    }
-
-    private var telemetryDescription: String {
-        viewModel.bluetooth.telemetryIsAvailable
-            ? "LIVE LEAN TELEMETRY · 10 HZ"
-            : "LEAN TELEMETRY UNAVAILABLE OR STALE"
-    }
+//    private var stateSymbol: String {
+//        !viewModel.isConnected
+//            ? "bolt.horizontal.circle"
+//            : viewModel.calibrationState == .inProgress
+//                ? "scope"
+//                : viewModel.sessionState == .logging ? "flag.checkered" : "circle"
+//    }
+//
+//    private var telemetryDescription: String {
+//        viewModel.bluetooth.telemetryIsAvailable
+//            ? "LIVE LEAN TELEMETRY · 10 HZ"
+//            : "LEAN TELEMETRY UNAVAILABLE OR STALE"
+//    }
 }
 
 private enum LeanSide { case left, right }
