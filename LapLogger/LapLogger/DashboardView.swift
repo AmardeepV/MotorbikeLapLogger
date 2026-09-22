@@ -131,17 +131,31 @@ private struct LeanPanel: View {
     }
 
     private var currentDisplay: String {
-        guard available, let value = telemetry?.currentLeanDegrees else { return "—" }
+        guard available, let value = telemetry?.currentLeanDegrees else {
+            return "—"
+        }
+
         switch side {
-        case .left: return value < 0 ? String(format: "%.1f°", value) : "—"
-        case .right: return value > 0 ? String(format: "+%.1f°", value) : "—"
+        case .left:
+            return value > 0 ? String(format: "%.1f°", abs(value)) : "—"
+
+        case .right:
+            return value < 0 ? String(format: "%.1f°", abs(value)) : "—"
         }
     }
     private var maximumDisplay: String {
-        guard available, let telemetry else { return "—" }
-        let value = side == .left ? telemetry.maximumLeftLeanDegrees : telemetry.maximumRightLeanDegrees
-        return String(format: "%.1f°", value)
+        guard available, let telemetry else {
+            return "—"
+        }
+
+        let value = side == .left
+            ? telemetry.maximumRightLeanDegrees
+            : telemetry.maximumLeftLeanDegrees
+
+        return String(format: "%.1f°", abs(value))
     }
-    private var currentCaption: String { side == .left ? "NEGATIVE SIGN" : "POSITIVE SIGN" }
+    private var currentCaption: String {
+        "CURRENT LEAN"
+    }
     private var accent: Color { side == .left ? AppTheme.accent : AppTheme.healthy }
 }
