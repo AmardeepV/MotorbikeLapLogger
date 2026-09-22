@@ -227,56 +227,41 @@ struct DashboardView: View {
     }
 
     private var centerConsole: some View {
-        VStack(spacing: 12) {
-            DashboardCard {
-                VStack(alignment: .leading, spacing: 9) {
-                    HStack {
-                        VStack(alignment: .leading, spacing: 3) {
-                            Text("STATUS")
-                                .font(.caption2.weight(.bold))
-                                .foregroundStyle(.secondary)
-                            Text(primaryState)
-                                .font(.title3.weight(.bold))
-                                .foregroundStyle(stateColor)
-                        }
-                        Spacer()
-//                        Image(systemName: stateSymbol)
-//                            .font(.title2)
-//                            .foregroundStyle(stateColor)
-                    }
+        HStack(spacing: 18) {
+            // LOGGER STATUS section
+            VStack(alignment: .leading, spacing: 2) {
+                Text("LOGGER STATUS")
+                    .font(.caption2.weight(.bold))
+                    .foregroundStyle(.secondary)
 
-                    Divider().overlay(.white.opacity(0.12))
-
-                    HStack {
-                        detail("SESSION", viewModel.sessionNumber.map(String.init) ?? "—")
-                        Spacer()
-                        detail("LAP", viewModel.currentLap > 0 ? String(viewModel.currentLap) : "—")
-                        Spacer()
-                        detail("CAL", viewModel.calibrationState == .inProgress ? "ACTIVE" : "READY")
-                    }
-                }
+                Text(primaryState)
+                    .font(.title3.weight(.bold))
+                    .foregroundStyle(stateColor)
             }
 
-            HStack(spacing: 8) {
-                controlButton("CAL", symbol: "scope", color: AppTheme.accent, enabled: viewModel.canCalibrate, action: viewModel.calibrate)
-                controlButton("LAP", symbol: "flag.checkered", color: AppTheme.healthy, enabled: viewModel.canSendLap, action: viewModel.lap)
-                controlButton("STOP", symbol: "stop.fill", color: AppTheme.danger, enabled: viewModel.canStop) { showStopConfirmation = true }
-            }
+            // SESSION
+            detail(
+                "SESSION",
+                viewModel.sessionNumber.map(String.init) ?? "—"
+            )
 
-            DashboardCard {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("LATEST ESP32 STATUS")
-                        .font(.caption2.weight(.bold))
-                        .foregroundStyle(.secondary)
-                    Text(viewModel.bluetooth.latestStatusMessage)
-                        .font(.subheadline.weight(.semibold))
-                        .foregroundStyle(.white)
-                        .lineLimit(2)
-//                    Text(telemetryDescription)
-//                        .font(.caption)
-//                        .foregroundStyle(viewModel.bluetooth.telemetryIsAvailable ? AppTheme.healthy : AppTheme.warning)
-                }
-            }
+            // LAP
+            detail(
+                "LAP",
+                viewModel.currentLap > 0 ? String(viewModel.currentLap) : "—"
+            )
+
+            // CAL
+            detail(
+                "CAL",
+                viewModel.calibrationState == .inProgress ? "ACTIVE" : "READY"
+            )
+
+            Spacer()
+
+//            Image(systemName: stateSymbol)
+//                .font(.title3)
+//                .foregroundStyle(stateColor)
         }
         .frame(maxWidth: .infinity, alignment: .center)
     }
