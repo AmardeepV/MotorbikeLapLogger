@@ -103,6 +103,7 @@ final class BluetoothManager: NSObject, ObservableObject {
     private var statusCharacteristic: CBCharacteristic?
     private var telemetryCharacteristic: CBCharacteristic?
     private var wantsConnection = false
+    private let savedPeripheralIDKey = "savedPeripheralID"
     private var pendingCommand: String?
     private var telemetryRefreshTimer: Timer?
     private var lastTelemetryErrorAt: Date?
@@ -132,6 +133,31 @@ final class BluetoothManager: NSObject, ObservableObject {
         discoveredDevices = []
         connectionState = .scanning
         centralManager.scanForPeripherals(withServices: [Self.serviceUUID], options: [CBCentralManagerScanOptionAllowDuplicatesKey: false])
+    }
+    
+    func reconnectToSavedDevice() {
+        guard centralManager.state == .poweredOn else {
+            updateAvailability(for: centralManager.state)
+            return
+        }
+
+        guard
+            let savedID = UserDefaults.standard.string(forKey: savedPeripheralIDKey),
+            let uuid = UUID(uuidString: savedID)
+        else {
+            scanForDevices()
+            return
+        }
+
+        let peripherals = centralManager.retrievePeripherals(
+            withIdentifiers: [uuid]
+        )
+
+        if let savedPeripheral = peripherals.first {
+            connect(to: savedPeripheral)
+        } else {
+            scanForDevices()
+        }
     }
 
     func connect(to device: BluetoothDevice) {
@@ -171,6 +197,10 @@ final class BluetoothManager: NSObject, ObservableObject {
 
     private func connect(to target: CBPeripheral) {
         wantsConnection = true
+        UserDefaults.standard.set(
+            target.identifier.uuidString,
+            forKey: savedPeripheralIDKey
+        )
         stopScanning()
         errorMessage = nil
         peripheral = target
@@ -208,12 +238,20 @@ extension BluetoothManager: CBCentralManagerDelegate {
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
         updateAvailability(for: central.state)
         guard central.state == .poweredOn else { stopScanning(); connectionState = .disconnected; return }
+        reconnectToSavedDevice()
     }
 
     func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String: Any], rssi RSSI: NSNumber) {
         let name = peripheral.name ?? (advertisementData[CBAdvertisementDataLocalNameKey] as? String) ?? "Unnamed lap logger"
         let device = BluetoothDevice(id: peripheral.identifier, name: name)
         if !discoveredDevices.contains(device) { discoveredDevices.append(device) }
+        if let savedID = UserDefaults.standard.string(
+            forKey: savedPeripheralIDKey
+        ),
+           savedID == peripheral.identifier.uuidString,
+           !isConnected {
+            connect(to: peripheral)
+        }
     }
 
     func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
