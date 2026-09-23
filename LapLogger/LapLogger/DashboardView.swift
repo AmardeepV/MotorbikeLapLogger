@@ -16,7 +16,11 @@ struct DashboardView: View {
                         portraitDashboard
                     }
                 }
-                .padding(landscape ? 10 : 16)
+                .padding(
+                    landscape
+                        ? EdgeInsets(top: 10, leading: 10, bottom: 0, trailing: 10)
+                        : EdgeInsets(top: 16, leading: 16, bottom: 16, trailing: 16)
+                )
             }
             .background(AppTheme.background)
             //.navigationTitle("LAP LOGGER")
@@ -90,7 +94,7 @@ struct DashboardView: View {
                     telemetry: viewModel.bluetooth.telemetry,
                     available: viewModel.bluetooth.telemetryIsAvailable
                 )
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                //.frame(maxWidth: .infinity, maxHeight: .infinity)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }

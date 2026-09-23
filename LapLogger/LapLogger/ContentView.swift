@@ -11,24 +11,20 @@ import SwiftUI
 struct ContentView: View {
     @StateObject private var viewModel = LapLoggerViewModel()
     @State private var selectedPage: AppPage = .dashboard
+    @State private var showMenu = false
+    
 
     var body: some View {
         ZStack(alignment: .topTrailing) {
             selectedView
 
-            Menu {
-                ForEach(AppPage.allCases) { page in
-                    Button {
-                        selectedPage = page
-                    } label: {
-                        Label(page.title, systemImage: page.icon)
-                    }
-                }
+            Button {
+                showMenu = true
             } label: {
                 Image(systemName: "line.3.horizontal")
                     .font(.system(size: 22, weight: .semibold))
                     .foregroundStyle(.white)
-                    .frame(width: 48, height: 48)
+                    .frame(width: 48, height: 68)
                     .background(
                         AppTheme.cardSecondary,
                         in: RoundedRectangle(
@@ -37,12 +33,31 @@ struct ContentView: View {
                         )
                     )
             }
+
             .padding(.trailing, 16)
-            .padding(.top, 8)
+            .padding(.top, 10)
+            .zIndex(100)
         }
         .tint(AppTheme.accent)
         .preferredColorScheme(.dark)
         .background(AppTheme.background)
+        .sheet(isPresented: $showMenu) {
+            NavigationStack {
+                List {
+                    ForEach(AppPage.allCases) { page in
+                        Button {
+                            selectedPage = page
+                            showMenu = false
+                        } label: {
+                            Label(page.title, systemImage: page.icon)
+                        }
+                    }
+                }
+                .navigationTitle("Navigation")
+                .navigationBarTitleDisplayMode(.inline)
+            }
+            .presentationDetents([.medium])
+        }
     }
 
     @ViewBuilder
@@ -99,7 +114,7 @@ private enum AppPage: String, CaseIterable, Identifiable {
         case .activity:
             return "clock.arrow.circlepath"
         case .bluetooth:
-            return "bluetooth"
+            return "antenna.radiowaves.left.and.right"
         case .settings:
             return "gearshape"
         }
