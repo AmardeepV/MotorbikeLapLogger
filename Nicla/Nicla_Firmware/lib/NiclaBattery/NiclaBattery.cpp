@@ -146,40 +146,18 @@ void NiclaBattery::update()
 
         case ::OperatingStatus::ChargingComplete:
         {
+            _operatingStatus =
+                NiclaBattery::OperatingStatus::Full;
+
+            // Green
+            nicla::leds.setColor(0, 255, 0);
+
             /*
-            * Do not report Full solely because the IC
-            * returned ChargingComplete.
+            * Do not disable charging here.
             *
-            * Check the measured battery voltage too.
+            * The charger should remain enabled so the
+            * power-management IC can manage the battery.
             */
-            if (_batteryVoltage >= 4.10f)
-            {
-                _operatingStatus =
-                    NiclaBattery::OperatingStatus::Full;
-
-                // Green
-                nicla::leds.setColor(0, 255, 0);
-
-                /*
-                * Stop charging after the power IC reports
-                * charging complete.
-                */
-                nicla::disableCharging();
-            }
-            else
-            {
-                /*
-                * The reported charging state and measured
-                * voltage are inconsistent.
-                *
-                * Do not display Full.
-                */
-                _operatingStatus =
-                    NiclaBattery::OperatingStatus::Discharging;
-
-                // Blue
-                nicla::leds.setColor(0, 0, 255);
-            }
 
             break;
         }
@@ -196,7 +174,8 @@ void NiclaBattery::update()
 
         case ::OperatingStatus::Ready:
         {
-            _operatingStatus = NiclaBattery::OperatingStatus::Discharging;
+            _operatingStatus =
+                NiclaBattery::OperatingStatus::Unknown;
 
             // Blue
             nicla::leds.setColor(0, 0, 255);
