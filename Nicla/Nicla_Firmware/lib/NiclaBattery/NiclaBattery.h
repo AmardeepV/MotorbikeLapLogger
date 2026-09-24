@@ -44,6 +44,9 @@ private:
     OperatingStatus _operatingStatus;
 
     unsigned long _lastUpdate;
+
+    uint8_t _zeroVoltageReadings;
+
     // Battery configuration
     static constexpr int BATTERY_CAPACITY_MAH = 400;
     static constexpr int BATTERY_CHARGING_CURRENT_MA = 80;

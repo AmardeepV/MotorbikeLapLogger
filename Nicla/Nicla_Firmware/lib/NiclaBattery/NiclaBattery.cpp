@@ -5,7 +5,8 @@ NiclaBattery::NiclaBattery()
       _batteryLevel(0),
       _batteryConnected(false),
       _operatingStatus(OperatingStatus::Unknown),
-      _lastUpdate(0)
+      _lastUpdate(0),
+      _zeroVoltageReadings(0)
 {
 }
 
@@ -70,25 +71,45 @@ void NiclaBattery::update()
     _lastUpdate = currentTime;
 
     /*
-     * Read the battery voltage.
-     */
-    _batteryVoltage = nicla::getCurrentBatteryVoltage();
+    * Read the battery voltage.
+    */
+    const float measuredVoltage =
+        nicla::getCurrentBatteryVoltage();
 
     /*
-     * Determine whether a battery is connected.
-     */
-    _batteryConnected = (_batteryVoltage > 0.0f);
-
-    if (!_batteryConnected)
+    * Ignore occasional invalid zero readings.
+    *
+    * Five consecutive zero readings are required
+    * before the battery is considered disconnected.
+    */
+    if (measuredVoltage <= 0.0f)
     {
-        _batteryLevel = 0;
-        _operatingStatus = OperatingStatus::NotConnected;
+        if (_zeroVoltageReadings < 5)
+        {
+            _zeroVoltageReadings++;
+        }
 
-        // LED off
-        nicla::leds.setColor(0, 0, 0);
+        if (_zeroVoltageReadings >= 5)
+        {
+            _batteryVoltage = 0.0f;
+            _batteryLevel = 0;
+            _batteryConnected = false;
+            _operatingStatus = OperatingStatus::NotConnected;
+
+            // LED off
+            nicla::leds.setColor(0, 0, 0);
+        }
 
         return;
     }
+
+    /*
+    * A valid voltage reading was received.
+    */
+    _zeroVoltageReadings = 0;
+
+    _batteryVoltage = measuredVoltage;
+    _batteryConnected = true;
 
     /*
      * Calculate an approximate battery percentage
@@ -125,16 +146,40 @@ void NiclaBattery::update()
 
         case ::OperatingStatus::ChargingComplete:
         {
-            _operatingStatus = NiclaBattery::OperatingStatus::Full;
-
-            // Green
-            nicla::leds.setColor(0, 255, 0);
-
             /*
-            * Stop charging after the power IC reports
-            * that charging is complete.
+            * Do not report Full solely because the IC
+            * returned ChargingComplete.
+            *
+            * Check the measured battery voltage too.
             */
-            nicla::disableCharging();
+            if (_batteryVoltage >= 4.10f)
+            {
+                _operatingStatus =
+                    NiclaBattery::OperatingStatus::Full;
+
+                // Green
+                nicla::leds.setColor(0, 255, 0);
+
+                /*
+                * Stop charging after the power IC reports
+                * charging complete.
+                */
+                nicla::disableCharging();
+            }
+            else
+            {
+                /*
+                * The reported charging state and measured
+                * voltage are inconsistent.
+                *
+                * Do not display Full.
+                */
+                _operatingStatus =
+                    NiclaBattery::OperatingStatus::Discharging;
+
+                // Blue
+                nicla::leds.setColor(0, 0, 255);
+            }
 
             break;
         }
