@@ -30,6 +30,9 @@ public:
 
     OperatingStatus getOperatingStatus() const;
 
+    float getEstimatedChargingTimeHours() const;
+    float getEstimatedRemainingChargingTimeHours() const;
+
     void printStatus(Stream& output);
 
 private:
@@ -41,6 +44,17 @@ private:
     OperatingStatus _operatingStatus;
 
     unsigned long _lastUpdate;
+    // Battery configuration
+    static constexpr int BATTERY_CAPACITY_MAH = 400;
+    static constexpr int BATTERY_CHARGING_CURRENT_MA = 80;
+
+    // LiPo voltage limits
+    static constexpr float BATTERY_MIN_VOLTAGE = 3.20f;
+    static constexpr float BATTERY_MAX_VOLTAGE = 4.20f;
+
+    // Battery status update interval
+    static constexpr unsigned long BATTERY_UPDATE_INTERVAL_MS = 1000;
 };
 
 #endif
+

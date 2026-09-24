@@ -27,7 +27,6 @@ void updateBatteryStatus()
     battery.update();
 
     Serial.println();
-    Serial.println("----- Battery Status -----");
 
     battery.printStatus(Serial);
 
