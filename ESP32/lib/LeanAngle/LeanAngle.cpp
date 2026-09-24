@@ -76,3 +76,31 @@ float LeanAngle::getOffset() const
 {
     return _offset;
 }
+
+void LeanAngle::resetExtremes()
+{
+    _maximumLeftLean = 0.0f;
+    _maximumRightLean = 0.0f;
+}
+
+void LeanAngle::updateExtremes(float correctedAngle)
+{
+    if (correctedAngle < 0.0f)
+    {
+        _maximumLeftLean = max(_maximumLeftLean, -correctedAngle);
+    }
+    else
+    {
+        _maximumRightLean = max(_maximumRightLean, correctedAngle);
+    }
+}
+
+float LeanAngle::getMaximumLeftLean() const
+{
+    return _maximumLeftLean;
+}
+
+float LeanAngle::getMaximumRightLean() const
+{
+    return _maximumRightLean;
+}

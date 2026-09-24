@@ -20,6 +20,13 @@ public:
     void setCommand(Command command);
 
     void sendStatus(const String& status);
+    void sendTelemetry(
+        uint32_t timestampMs,
+        float currentLeanDegrees,
+        float maximumLeftLeanDegrees,
+        float maximumRightLeanDegrees,
+        bool isLogging
+    );
 
     void onConnected();
     void onDisconnected();

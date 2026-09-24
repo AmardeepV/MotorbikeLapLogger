@@ -15,7 +15,12 @@ static constexpr char COMMAND_UUID[] =
 static constexpr char STATUS_UUID[] =
     "6e400003-b5a3-f393-e0a9-e50e24dcca9e";
 
+// T1,<millis>,<signed degrees>,<left max degrees>,<right max degrees>,<logging>
+static constexpr char TELEMETRY_UUID[] =
+    "6e400004-b5a3-f393-e0a9-e50e24dcca9e";
+
 static BLECharacteristic* statusCharacteristic = nullptr;
+static BLECharacteristic* telemetryCharacteristic = nullptr;
 
 class CommandCallbacks : public BLECharacteristicCallbacks
 {
@@ -98,6 +103,17 @@ bool BLEManager::begin()
         new BLE2902()
     );
 
+    telemetryCharacteristic =
+        service->createCharacteristic(
+            TELEMETRY_UUID,
+            BLECharacteristic::PROPERTY_READ |
+            BLECharacteristic::PROPERTY_NOTIFY
+        );
+
+    telemetryCharacteristic->addDescriptor(
+        new BLE2902()
+    );
+
     commandCharacteristic->setCallbacks(
         new CommandCallbacks(*this)
     );
@@ -150,6 +166,34 @@ void BLEManager::sendStatus(const String& status)
     }
 
     Serial.println(status);
+}
+
+void BLEManager::sendTelemetry(
+    uint32_t timestampMs,
+    float currentLeanDegrees,
+    float maximumLeftLeanDegrees,
+    float maximumRightLeanDegrees,
+    bool isLogging)
+{
+    if (!_connected || telemetryCharacteristic == nullptr)
+    {
+        return;
+    }
+
+    char packet[96];
+    snprintf(
+        packet,
+        sizeof(packet),
+        "T1,%lu,%.2f,%.2f,%.2f,%d",
+        static_cast<unsigned long>(timestampMs),
+        currentLeanDegrees,
+        maximumLeftLeanDegrees,
+        maximumRightLeanDegrees,
+        isLogging ? 1 : 0
+    );
+
+    telemetryCharacteristic->setValue(packet);
+    telemetryCharacteristic->notify();
 }
 
 void BLEManager::onConnected()

@@ -29,6 +29,11 @@ public:
 
     float getOffset() const;
 
+    void resetExtremes();
+    void updateExtremes(float correctedAngle);
+    float getMaximumLeftLean() const;
+    float getMaximumRightLean() const;
+
 private:
     bool _isCalibrating{false};
 
@@ -36,6 +41,8 @@ private:
     float _sampleSum{0.0f};
 
     float _offset{0.0f};
+    float _maximumLeftLean{0.0f};
+    float _maximumRightLean{0.0f};
 
     static constexpr uint16_t CALIBRATION_SAMPLES = 200;
 };
