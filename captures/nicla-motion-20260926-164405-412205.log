@@ -1,0 +1,38 @@
+Bootloader starting
+NRF_POWER->GPREGRET2 = 0004
+CONFIG_GPIO_AS_PINRESET NOT defined
+BHI260/BHA260 found. Product ID read 89
+Loading firmware. Boot status: 11
+No BHY UPDATE file found!
+No ANNA_UPDATE_FILE found. Starting main application
+Ä$≈ÖçïÅthe box still. Send s to capture 5 s startup + 30 s stationary data.
+# Send q for a 60 s six-axis quaternion bench capture at 50 Hz.
+# Send m for a 120 s motion logger bench test including magnetometer raw counts.
+# Send l for a 120 s live lean bench test. Start upright and still; c recalibrates.
+# NICLA_MOTION_V1
+# Arduino_BHY2=1.0.8; Game RV=37; no magnetometer fusion or BLE output
+# configuration_read_attempts=3
+# CONFIG,phase,sensor_id,rate_hz,latency_ms,range,sensitivity
+# MOTION,sequence,host_us,status,forward_mps2,left_mps2,up_mps2,wx_dps,wy_dps,wz_dps,acc_age_us,gyro_age_us,q_age_us,flags,calibration_id
+# motion_flags: 1=range_limit,2=specific_force_not_1g,4=delivery_skew; linear acceleration is experimental
+# magnetometer=22,rate_hz=10; Bosch-corrected raw counts; units/frame not validated; not used in lean fusion
+# LEAN,host_us,status,roll_deg,pitch_nose_up_deg,calibration_id; blank angles when invalid
+# startup_us=5000000,duration_us=120000000,rate_hz=50
+# host_us is delivery time; hardware timestamps and upstream loss are not exposed
+sensor_id,sequence,host_us,x_raw,y_raw,z_raw,w_raw,accuracy_raw
+# CONFIG_READ_FAILURE,phase=start,sensor_id=4,attempt=1,status=-5,bytes=4,expected_bytes=12
+# CONFIG,start,4,50.000,0,4,0
+# CONFIG,start,13,50.000,0,1000,0
+# CONFIG,start,37,50.000,0,1,0
+# CONFIG,start,22,12.500,0,2500,0
+# ERROR,configuration_not_verified; reset before retrying
+
+# EXPERIMENT,motion
+# cues_relative_to_first_VALID_reading_us
+# PLANNED_CUE,0,CALIBRATED: keep upright and still for 15 seconds; acceleration should be near zero.
+# PLANNED_CUE,15000000,SLIDE: keep the box level; gently move it forward (+Y) and stop, then return. Repeat slowly for 15 seconds; leave cable slack.
+# PLANNED_CUE,30000000,REST: leave the box upright and still for 15 seconds.
+# PLANNED_CUE,45000000,NOSE UP: raise the front about 15 degrees over 5 seconds, then hold still.
+# PLANNED_CUE,60000000,RETURN LEVEL over 5 seconds, then hold still.
+# PLANNED_CUE,75000000,LEAN: tilt about 25 degrees over 5 seconds, then hold still.
+# PLANNED_CUE,90000000,RETURN UPRIGHT over 5 seconds; remain still until finished.

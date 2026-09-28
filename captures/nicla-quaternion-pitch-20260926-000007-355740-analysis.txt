@@ -1,0 +1,34 @@
+Six-axis quaternion bench capture (Game Rotation Vector ID 37)
+startup: 241 quaternion rows; norm min/mean/max 0.999964/0.999968/0.999969; outside 1 +/- 0.01: 0
+post-startup: 2731 quaternion rows; norm min/mean/max 0.999929/0.999963/0.999999; outside 1 +/- 0.01: 0
+Sensor 4: 49.655 delivered Hz; maximum delivery gap 20452 us
+Sensor 13: 49.655 delivered Hz; maximum delivery gap 20334 us
+Sensor 37: 49.655 delivered Hz; maximum delivery gap 20451 us
+Adjacent negative quaternion dot products: 0 (q and -q can represent the same pose)
+# CONFIG_READ_FAILURE,phase=start,sensor_id=4,attempt=1,status=-5,bytes=4,expected_bytes=12
+# END,accel_events=2972,gyro_events=2973,quaternion_events=2972,queue_dropped=0,malformed=0,max_poll_gap_us=148918
+# EXPERIMENT,quaternion-pitch
+Checks: passed (host capture and quaternion norm only)
+Quaternion XYZW is scaled by 1/16384. Norms were checked before any normalization.
+Game RV accuracy=0 is not a confidence estimate. No absolute heading reference is provided.
+No lean, Euler angles or mounting transform applied: quaternion direction/frame still needs bench validation.
+Use observed motion/hold intervals, not prompt times alone. Host timestamps are not acquisition timestamps.
+
+Exploratory pitch check using the same convention as the roll capture:
+Hamilton XYZW normalized after raw norm checks; reported up = R(q)^T * (0,0,1). Motorcycle up = (-reported_up.x,-reported_up.y,reported_up.z). Roll = atan2(bike_up.y,bike_up.z), positive right. Nose-up-positive pitch = atan2(bike_up.x,hypot(bike_up.y,bike_up.z)). No zero-offset calibration applied.
+
+Interval | sensor | count | roll mean / population SD | pitch mean / population SD (degrees)
+Initial upright 5-10 s | 37 | 248 | +0.82265 / 0.00462 | -0.27587 / 0.00700
+Initial upright 5-10 s | 4 | 248 | +0.82448 / 0.03395 | -0.27301 / 0.03508
+Nose-up hold 18-22 s | 37 | 199 | -1.23337 / 0.02419 | +24.01127 / 0.09059
+Nose-up hold 18-22 s | 4 | 199 | -1.25390 / 0.04229 | +24.02315 / 0.10641
+Middle upright 30-32 s | 37 | 100 | +1.01596 / 0.00371 | -0.85605 / 0.04496
+Middle upright 30-32 s | 4 | 100 | +1.00812 / 0.03652 | -0.82170 / 0.05632
+Nose-down hold 40-44 s | 37 | 199 | +1.06489 / 0.02762 | -22.31003 / 0.32533
+Nose-down hold 40-44 s | 4 | 199 | +1.09765 / 0.05265 | -22.31935 / 0.33330
+Final upright 54-60 s | 37 | 298 | +0.98996 / 0.01105 | -1.44925 / 0.01336
+Final upright 54-60 s | 4 | 298 | +0.99139 / 0.03694 | -1.44207 / 0.03713
+
+Interpretation: pitch changes strongly in both directions, while roll remains within about 2.1 degrees of its initial upright value in these hold windows. Roll is not exactly constant: nose-up shifts it by about -2.06 degrees. Accelerometer-derived roll shows the same shift, compatible with off-axis movement or mounting alignment; this does not independently establish the cause because Game RV uses acceleration.
+This supports the candidate convention for these observed roll/pitch motions, not absolute angle accuracy, perfect pitch rejection, all heading orientations, or performance during riding acceleration. The hand-positioned angles are not reference angles. Final pitch differs from initial by about -1.18 degrees, also visible in acceleration; this is not by itself a drift measurement.
+Initial configuration-read timeout recovered on retry and remains unresolved. No firmware or calibration changed.

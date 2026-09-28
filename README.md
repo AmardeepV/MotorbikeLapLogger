@@ -1,5 +1,18 @@
 # Motorbike Lap Logger
 
+> **Current Nicla-only scope:** live IMU measurements in the existing iOS app,
+> no SD-card storage and no GNSS. Development captures remain optional.
+>
+> [Bluetooth installation and first test](docs/NICLA_BLUETOOTH_LIVE.md): upload the
+> `nicla_live_ble` environment and run the updated iPhone app. It provides live lean,
+> pitch, estimated acceleration and body angular rates, with remote calibration.
+> Both sides build; the actual Nicla-to-iPhone radio test is next.
+>
+> The default is now `nicla_live_ble`. Select `nicla_sense_me` explicitly for USB diagnostics. See
+> [motion tests](docs/NICLA_MOTION_LOGGER.md), [lean tests](docs/NICLA_LIVE_LEAN_BENCH.md),
+> and [sensor validation](docs/NICLA_SENSOR_VALIDATION.md). Riding accuracy is not
+> yet independently validated. The architecture below is the legacy ESP32 system.
+
 A motorcycle lap-data logger built around an Arduino Nicla, ESP32, and an iPhone companion app.
 
 The ESP32 receives IMU telemetry from the Nicla over UART, processes and logs telemetry to an SD card, manages sessions/laps, and publishes live display telemetry over Bluetooth Low Energy (BLE). The iPhone app displays live lean data and provides CAL, LAP, and STOP controls.

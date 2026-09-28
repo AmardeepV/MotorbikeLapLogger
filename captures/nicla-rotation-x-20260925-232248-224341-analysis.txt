@@ -1,0 +1,43 @@
+Controlled marked-X rotation — 2026-09-25
+
+Capture checks passed: start/end configurations match (100 Hz, zero requested
+latency, 4 g accelerometer and 1000 deg/s gyro). No reported application drops,
+malformed packets or sequence gaps. Initial accelerometer configuration read
+failed once (status -5, 4 bytes), then recovered. Hardware acquisition timestamps
+and upstream losses remain unavailable.
+
+Observed motion took longer than the planned prompts. Analysis uses observed
+phases rather than labeling the entire 5–35 s window stationary:
+
+Approximate phase                Mean acceleration XYZ (g)
+Initial hold, 5–10 s              +0.00661, -0.01438, +1.00342
+Turned position, 19.5–20.5 s      -0.99813, -0.01720, +0.03092
+Final hold, 32–35 s               +0.02141, -0.01317, +1.00123
+
+For the user's previously observed accelerometer frame mapping, these agree
+with marked +Z upward, then marked +Y upward, then approximately +Z upward.
+The final pose is close to, but not identical to, the starting pose.
+
+Outward motion, approximately 12–19.5 s:
+  Gyro mean XYZ: -0.115, +11.885, +0.968 deg/s
+  Gyro RMS XYZ:   3.153,  16.157,  2.675 deg/s
+  Peak positive reported Y: +58.044 deg/s
+Return motion, approximately 21–29 s:
+  Gyro mean XYZ: +0.524, -11.221, -0.188 deg/s
+  Gyro RMS XYZ:   2.444,  12.817,  1.601 deg/s
+  Peak negative reported Y: -35.645 deg/s
+
+Reported gyro Y dominates both turns and reverses sign. The result supports
+marked-X rotation mapping to reported gyro Y, consistent with the accelerometer
+frame permutation. +Z-up to +Y-up produces predominantly positive reported gyro Y;
+the reverse motion produces predominantly negative reported gyro Y.
+
+Cross-axis motion remains: reported Z reaches about -43.3 deg/s during handling
+around 11 s, before the main turn, and reported X/Z vary during the turns. This
+was not a pure single-axis reference rotation. Do not treat cross-axis signals
+as sensor cross-axis error without a constrained fixture.
+
+Outcome: useful axis-dominance and sign validation for marked X. It is not a
+measurement of gyro scale accuracy, integrated angle accuracy, or motorcycle
+lean accuracy. No stationary bias correction or precise integrated angle was
+estimated from this dynamic recording. Next: marked-Y controlled rotation.

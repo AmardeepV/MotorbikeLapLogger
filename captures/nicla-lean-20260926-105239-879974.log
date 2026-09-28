@@ -1,0 +1,14 @@
+
+# EXPERIMENT,lean
+# cues_relative_to_first_VALID_reading_us
+# PLANNED_CUE,0,CALIBRATED: keep upright for 5 seconds. Right lean is positive; nose-up pitch is positive.
+# PLANNED_CUE,5000000,LEAN RIGHT about 25 degrees over 5 seconds, then hold.
+# PLANNED_CUE,15000000,KEEP RIGHT LEAN: raise the front about 15 degrees over 5 seconds, then hold.
+# PLANNED_CUE,25000000,KEEP RIGHT LEAN: return the front to level over 5 seconds, then hold.
+# PLANNED_CUE,35000000,KEEP RIGHT LEAN: lower the front about 15 degrees over 5 seconds, then hold.
+# PLANNED_CUE,45000000,RETURN UPRIGHT AND LEVEL over 5 seconds, then hold.
+# PLANNED_CUE,55000000,LEAN LEFT about 25 degrees over 5 seconds, then hold.
+# PLANNED_CUE,65000000,KEEP LEFT LEAN: raise the front about 15 degrees over 5 seconds, then hold.
+# PLANNED_CUE,75000000,KEEP LEFT LEAN: return the front to level over 5 seconds, then hold.
+# PLANNED_CUE,85000000,KEEP LEFT LEAN: lower the front about 15 degrees over 5 seconds, then hold.
+# PLANNED_CUE,95000000,RETURN UPRIGHT AND LEVEL over 5 seconds; leave still until finished.

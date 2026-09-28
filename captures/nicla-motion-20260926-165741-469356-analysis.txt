@@ -1,0 +1,34 @@
+Motion capture: experimental acceleration, body rates and raw magnetic counts
+Ignored 553 pre-marker bytes.
+Sensor 4: 5950 raw rows
+Sensor 13: 5951 raw rows
+Sensor 22: 1488 raw rows
+Sensor 37: 5950 raw rows
+Motion statuses: {'STARTUP': 48, 'CALIBRATING': 31, 'VALID': 1111}
+Flag counts: {2: 1, 0: 1189}
+First valid lean: 8.122 s
+initial rest: n=100, forward/left/up means = -0.0011/-0.0003/+0.0343 m/s² (planned window; verify observed motion)
+rest after sliding: n=90, forward/left/up means = +0.0003/-0.0011/+0.0333 m/s² (planned window; verify observed motion)
+nose-up hold: n=49, forward/left/up means = +0.0231/-0.0021/+0.0219 m/s² (planned window; verify observed motion)
+lean hold: n=49, forward/left/up means = +0.0032/-0.0122/+0.0126 m/s² (planned window; verify observed motion)
+final rest: n=50, forward/left/up means = +0.0008/+0.0009/-0.0170 m/s² (planned window; verify observed motion)
+# CONFIG_READ_FAILURE,phase=start,sensor_id=4,attempt=1,status=-5,bytes=4,expected_bytes=12
+# END,accel_events=5950,gyro_events=5951,quaternion_events=5950,magnetometer_events=1488,queue_dropped=0,malformed=0,max_poll_gap_us=171867
+Checks: passed (format, continuity, configuration and coverage only)
+Body-frame linear acceleration depends on the estimated gravity direction. VALID does not mean independently accurate during cornering. Magnetometer units/frame are not validated. Host times are delivery times.
+
+Observed-window review (times relative to first VALID lean):
+Phase | seconds | mean roll | mean pitch | forward / left / body-up acceleration means (m/s²) | forward SD
+Initial rest | 2-12 | +0.005 | -0.004 | -0.0011/-0.0003/+0.0343 | 0.0065
+Rest after sliding | 34-43 | -0.034 | -0.191 | +0.0003/-0.0011/+0.0333 | 0.0068
+Steadier nose-up segment | 54-56 | -0.156 | +26.126 | +0.0259/-0.0031/+0.0413 | 0.0135
+Later nose-up segment | 62-64 | -0.129 | +16.796 | +0.0127/-0.0034/-0.0092 | 0.0091
+Right lean hold | 86-90 | +25.891 | -0.736 | +0.0020/-0.0027/+0.0054 | 0.0069
+Final rest | 100-110 | -0.456 | -1.256 | +0.0002/+0.0001/-0.0161 | 0.0068
+
+Sliding motion was mainly observed 20-30 s after calibration, rather than beginning immediately at the 15 s cue. Delivered 10 Hz forward-acceleration values range -0.186 to +0.335 m/s² in this interval. These are sampled estimates, not ground-truth motion peaks or independently verified scale/sign.
+Nose-up posture changes during the nominal hold; short steadier intervals were selected after reviewing angle and angular-rate traces. Right lean settles around 26 degrees. Near-zero forward acceleration while tilted supports functional gravity compensation, but the orientation uses the same accelerometer, so this is not independent accuracy validation.
+The small nonzero body-up baseline remains visible (about +0.034 m/s² initially). No precision accelerometer bias/scale calibration has been applied. Final placement differs from initial (about -0.46 degrees roll and -1.25 degrees pitch); this cannot by itself establish drift.
+Magnetometer produced 1488 raw three-axis records with stable 12.5 Hz readback. This verifies acquisition, not magnetic calibration, magnetic units/frame, or reliable heading near the motorcycle.
+All post-calibration M rows are VALID. Delivery ages are at most 6491 us for acceleration, 6451 us for gyro and 16665 us for quaternion in valid rows. The recurring first configuration read timed out then recovered. Its root cause remains unresolved.
+No estimator/firmware changes made based on this capture. Next product integration is live iOS telemetry without SD-card storage; development capture files remain acceptable. GNSS is outside scope.

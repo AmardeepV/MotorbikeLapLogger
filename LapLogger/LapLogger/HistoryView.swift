@@ -20,7 +20,9 @@ struct HistoryView: View {
             .navigationTitle("Activity")
             .toolbar {
                 if !viewModel.bluetooth.activityLog.isEmpty {
-                    Button("Clear", role: .destructive) { viewModel.clearHistory() }
+                    ToolbarItem(placement: .topBarLeading) {
+                        Button("Clear", role: .destructive) { viewModel.clearHistory() }
+                    }
                 }
             }
         }

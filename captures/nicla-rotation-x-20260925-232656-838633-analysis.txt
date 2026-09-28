@@ -1,0 +1,17 @@
+Controlled marked-Y rotation (user-confirmed)
+Source: nicla-rotation-x-20260925-232656-838633.log
+The filename and EXPERIMENT marker say rotation-x because the X capture mode was reused. User explicitly confirmed marked Y. Raw log retained unchanged.
+
+Capture checks: passed
+No reported application drops or malformed records. Matching start/end configurations. Initial accelerometer read failed once and recovered; upstream losses remain unobserved.
+
+Outward, 11-16 s: gyro mean XYZ (deg/s) = 17.9965, 0.1206, -0.7981
+  gyro RMS XYZ (deg/s) = 23.5530, 1.4776, 2.7654
+Return, 21-31 s: gyro mean XYZ (deg/s) = -8.8814, -0.5049, 0.0313
+  gyro RMS XYZ (deg/s) = 10.8674, 1.6259, 1.0434
+Initial, 5-10 s: acceleration mean XYZ (g) = -0.02390, 0.00560, 1.00391
+Turned hold, 17-20 s: acceleration mean XYZ (g) = -0.03063, 0.99776, -0.00157
+Final, 32-35 s: acceleration mean XYZ (g) = -0.02903, 0.02499, 0.99973
+
+Interpretation: marked-Y rotation predominantly activates reported gyro X. The observed outward motion (+Z up to +X up) yields positive reported gyro X; reversing yields negative X. This does not define outward as a positive right-hand rotation about marked Y. The accelerometer endpoints and gyro motion are consistent with the previously observed signed frame mapping.
+Motion occurred outside nominal prompt windows. The ending position is close to, not identical to, the starting position. Some cross-axis motion persists. This is axis/sign validation, not precise gyro scale, integrated angle, or motorcycle lean validation.

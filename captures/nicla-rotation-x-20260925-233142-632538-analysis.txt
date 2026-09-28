@@ -1,0 +1,16 @@
+Marked-Z rotation, user-confirmed
+Source: nicla-rotation-x-20260925-233142-632538.log
+Filename/EXPERIMENT label says X because that capture mode was reused. Axis is Z per user; raw file unchanged.
+
+Capture checks passed; configurations match. No reported application drops, sequence gaps or malformed packets. Initial accelerometer configuration read failed once and recovered. Upstream losses and hardware acquisition times remain unavailable.
+
+Outward, 10–16 s: mean gyro XYZ (deg/s) -0.1777, -0.2141, -15.5104
+RMS gyro XYZ (deg/s) 0.3824, 0.8215, 20.7703
+Return, 21–27 s: mean gyro XYZ (deg/s) 0.1344, 0.1348, 15.3389
+RMS gyro XYZ (deg/s) 0.2950, 0.2054, 17.8196
+Initial hold: mean acceleration XYZ (g) 0.00703, -0.01422, 1.00409
+Turned hold: mean acceleration XYZ (g) -0.00023, 0.01282, 1.00435
+Final hold: mean acceleration XYZ (g) 0.00615, -0.01597, 1.00437
+
+Conclusion: gyro Z strongly dominates, negative outward and positive on return. Assuming the requested clockwise-first direction viewed from above +Z was followed, signs agree with the right-hand rule. Acceleration remains mainly +Z, consistent with a level yaw rotation; accelerometer data cannot establish the heading angle. No precise angle accuracy inferred.
+All three controlled rotation tests now support the same axis permutation seen in static acceleration: components expressed in marked-board axes are (reported Y, -reported X, reported Z). This is a coordinate remapping, not scale/bias or installation calibration. Full mounting orientation must be established separately before defining motorcycle roll.

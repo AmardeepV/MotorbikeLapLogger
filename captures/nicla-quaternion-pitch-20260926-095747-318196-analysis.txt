@@ -1,0 +1,34 @@
+Six-axis quaternion bench capture (Game Rotation Vector ID 37)
+startup: 241 quaternion rows; norm min/mean/max 0.999976/0.999979/0.999987; outside 1 +/- 0.01: 0
+post-startup: 2736 quaternion rows; norm min/mean/max 0.999930/0.999972/0.999999; outside 1 +/- 0.01: 0
+Sensor 4: 49.733 delivered Hz; maximum delivery gap 20407 us
+Sensor 13: 49.734 delivered Hz; maximum delivery gap 20978 us
+Sensor 37: 49.733 delivered Hz; maximum delivery gap 20406 us
+Adjacent negative quaternion dot products: 0 (q and -q can represent the same pose)
+# CONFIG_READ_FAILURE,phase=start,sensor_id=4,attempt=1,status=-5,bytes=4,expected_bytes=12
+# END,accel_events=2977,gyro_events=2978,quaternion_events=2977,queue_dropped=0,malformed=0,max_poll_gap_us=148545
+# EXPERIMENT,quaternion-pitch
+Checks: passed (host capture and quaternion norm only)
+Quaternion XYZW is scaled by 1/16384. Norms were checked before any normalization.
+Game RV accuracy=0 is not a confidence estimate. No absolute heading reference is provided.
+No lean, Euler angles or mounting transform applied: quaternion direction/frame still needs bench validation.
+Use observed motion/hold intervals, not prompt times alone. Host timestamps are not acquisition timestamps.
+
+Pitch repeat: user reports holding the box by hand.
+Same exploratory convention as prior roll and pitch reports: Hamilton XYZW normalized after norm checks; reported up = R(q)^T*(0,0,1), motorcycle up=(-ux,-uy,uz). Roll=atan2(-uy,uz); nose-up-positive pitch=atan2(-ux,hypot(uy,uz)). No zero-offset calibration applied.
+Hold windows checked against two-second motion summaries.
+Interval | sensor | N | roll mean / population SD | pitch mean / population SD (degrees)
+Initial upright 5-10s | 37 | 249 | +0.87596 / 0.00696 | -0.47716 / 0.00863
+Initial upright 5-10s | 4 | 249 | +0.87677 / 0.03487 | -0.47779 / 0.03623
+Nose-up 18-22s | 37 | 199 | +1.21694 / 0.00532 | +15.62670 / 0.11028
+Nose-up 18-22s | 4 | 199 | +1.21877 / 0.03555 | +15.69135 / 0.14550
+Middle upright 30-32s | 37 | 99 | +0.87687 / 0.03156 | -0.73540 / 0.09433
+Middle upright 30-32s | 4 | 99 | +0.87263 / 0.04867 | -0.74942 / 0.11030
+Nose-down 40-44s | 37 | 199 | +1.05437 / 0.01522 | -20.96920 / 0.17486
+Nose-down 40-44s | 4 | 199 | +1.04985 / 0.04816 | -21.07776 / 0.23630
+Final upright 54-60s | 37 | 299 | +0.88432 / 0.00494 | -0.70312 / 0.00712
+Final upright 54-60s | 4 | 299 | +0.88201 / 0.03627 | -0.70167 / 0.03670
+
+The nose-up roll shift relative to initial upright is about +0.34 degrees, versus -2.06 degrees in the previous recording. The nose-up pitch is smaller (+15.63 versus +24.01 degrees), so this is not a matched-angle accuracy comparison. Nose-down roll shift is about +0.18 degrees. Final roll returns within about 0.01 degrees of initial.
+Small within-hold fluctuations cannot explain away sustained mean offsets. Hand movement/alignment is plausible, but no independent reference establishes the cause. Acceleration-derived agreement is internal consistency, not independent validation. This capture supports pitch/roll separation for the tested motions, not an absolute accuracy specification or riding performance.
+No additional handheld repeat is needed to confirm the same basic signs. Precision testing requires constrained motion and an independent angle reference. Initial configuration read timed out then recovered, as in prior recordings; unresolved. No firmware or calibration changed.

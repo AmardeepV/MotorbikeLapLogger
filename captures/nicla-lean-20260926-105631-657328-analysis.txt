@@ -1,0 +1,30 @@
+Live lean repeat analysis
+nicla-lean-20260926-105631-657328.log
+User reports handheld testing with USB cable. No independent angle reference.
+Ignored 385 pre-marker boot bytes. One NICLA_LEAN_V1 run.
+First VALID 8.099964 seconds; statuses {'STARTUP': 49, 'CALIBRATING': 30, 'VALID': 1112}. No later invalid/stale/fault state. Calibration ID remains 1.
+Sensor 4: rows=5954, first seq=1, last seq=5954, sequence gaps=0, backwards times=0, max delivery gap=20876 us.
+Sensor 13: rows=5955, first seq=1, last seq=5955, sequence gaps=0, backwards times=0, max delivery gap=21093 us.
+Sensor 37: rows=5954, first seq=1, last seq=5954, sequence gaps=0, backwards times=0, max delivery gap=20876 us.
+Quaternion norm min/max=0.999921866/0.999998368
+Start/end settings match: all 50 Hz and latency 0; acceleration 4 g and gyro 1000 deg/s. Counts match END.
+# CONFIG_READ_FAILURE,phase=start,sensor_id=4,attempt=1,status=-5,bytes=4,expected_bytes=12
+# END,accel_events=5954,gyro_events=5955,quaternion_events=5954,queue_dropped=0,malformed=0,max_poll_gap_us=148485
+
+Hold windows, seconds relative to first VALID; selected after inspecting five-second summaries.
+Phase | interval | mean roll | roll SD | mean pitch | pitch SD (degrees)
+Initial upright | 0-5 | +0.019 | 0.011 | +0.012 | 0.007
+Right lean | 12-15 | +27.043 | 1.686 | +0.846 | 0.108
+Right nose-up | 22-25 | +25.636 | 0.209 | +13.412 | 0.057
+Right level | 32-35 | +24.581 | 0.506 | +1.031 | 0.022
+Right planned nose-down | 42-45 | +25.265 | 0.100 | +0.751 | 0.018
+Middle upright | 52-55 | -0.686 | 0.010 | -0.028 | 0.015
+Left lean | 62-65 | -25.506 | 0.107 | -0.500 | 0.010
+Left nose-up | 72-75 | -24.986 | 0.253 | +14.943 | 0.834
+Left level | 82-85 | -24.621 | 0.306 | -0.359 | 0.017
+Left planned nose-down | 92-95 | -24.495 | 0.148 | -0.425 | 0.017
+Final upright | 105-110 | -0.878 | 0.005 | +0.010 | 0.009
+
+Interpretation: another uninterrupted live capture with correct right-positive/left-negative signs and positive nose-up pitch during lean. Roll changes during combined movements remain inseparable from actual hand/cable motion; no accuracy score is justified. Planned nose-down phases are close to pitch-level again, so meaningful negative pitch while leaning was not captured.
+Final roll is about -0.88 degrees while pitch returns close to zero. Different hand placement can explain a return offset, but this recording cannot establish the cause or quantify drift.
+Bluetooth battery-powered capture is a useful next test-environment improvement. Existing iPhone app already has service/command/status/lean characteristics but its T1 payload lacks pitch and validity, and it does not persist raw bench recordings. A wireless test requires firmware startup/control without serial, a versioned bench protocol, disconnect/stale handling, and a receiver that can save/export records. Existing standalone sensor firmware does not currently advertise the app BLE service. Merely unplugging USB will not enable wireless capture. No firmware or app change made during this analysis.

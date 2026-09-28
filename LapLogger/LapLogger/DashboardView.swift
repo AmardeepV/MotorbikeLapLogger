@@ -322,9 +322,9 @@ private struct LeanPanel: View {
 
         switch side {
         case .left:
-            return value > 0 ? String(format: "%.1f°", abs(value)) : "—"
-        case .right:
             return value < 0 ? String(format: "%.1f°", abs(value)) : "—"
+        case .right:
+            return value > 0 ? String(format: "%.1f°", abs(value)) : "—"
         }
     }
 
@@ -334,8 +334,8 @@ private struct LeanPanel: View {
         }
 
         let value = side == .left
-            ? telemetry.maximumRightLeanDegrees
-            : telemetry.maximumLeftLeanDegrees
+            ? telemetry.maximumLeftLeanDegrees
+            : telemetry.maximumRightLeanDegrees
 
         return String(format: "%.1f°", abs(value))
     }

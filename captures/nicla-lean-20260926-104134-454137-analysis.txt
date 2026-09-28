@@ -1,0 +1,33 @@
+Live lean bench capture analysis
+Source: nicla-lean-20260926-104134-454137.log
+User reports holding the box with fingers. No independent angle reference.
+Excluded 12524 bytes preceding the single NICLA_LEAN_V1 marker. These include previous-run tail data retained by the serial recorder; the new run is analyzed from its marker only.
+
+Sensor 4: 5954 rows, first sequence 1, last 5954, sequence gaps 0, backwards timestamps 0, delivery rate 49.674 Hz, max delivery gap 20581 us.
+Sensor 13: 5955 rows, first sequence 1, last 5955, sequence gaps 0, backwards timestamps 0, delivery rate 49.684 Hz, max delivery gap 21367 us.
+Sensor 37: 5954 rows, first sequence 1, last 5954, sequence gaps 0, backwards timestamps 0, delivery rate 49.674 Hz, max delivery gap 20581 us.
+Quaternion norm range 0.999919195 to 0.999999339.
+Start/end configurations match: 50 Hz, latency 0; accelerometer 4 g, gyro 1000 deg/s. Row counts match END counters.
+# CONFIG_READ_FAILURE,phase=start,sensor_id=4,attempt=1,status=-5,bytes=4,expected_bytes=12
+# END,accel_events=5954,gyro_events=5955,quaternion_events=5954,queue_dropped=0,malformed=0,max_poll_gap_us=148634
+Live status counts: {'STARTUP': 49, 'CALIBRATING': 30, 'VALID': 1112}. All live calibration IDs after VALID are 1.
+First displayed VALID at 8.098201 s. No subsequent stale/invalid/capture-fault row.
+Native replay of raw callback order with the current Lean::Estimator accepts calibration at 8.025413 s. Live output is 10 Hz, so its first VALID follows at 8.098201 s. Maximum live-vs-replay angle difference is 0.0005 degrees, consistent with serial rounding; this checks implementation consistency, not sensor accuracy.
+
+Hold windows selected after checking motion in five-second bins; times below are relative to first displayed VALID.
+Phase | seconds | roll mean | roll population SD | pitch mean (degrees)
+Initial upright | 0-5 | +0.011 | 0.006 | -0.003
+Right lean | 12-15 | +26.707 | 0.281 | +0.368
+Right nose-up | 22-25 | +29.881 | 0.158 | +17.849
+Right returned pitch-level | 32-35 | +19.690 | 0.554 | -0.214
+Right planned nose-down | 42-45 | +18.267 | 0.289 | -0.202
+Middle upright | 52-55 | -0.938 | 0.018 | -0.401
+Left lean | 62-65 | -35.009 | 0.071 | -0.466
+Left nose-up | 72-75 | -31.638 | 0.125 | +21.995
+Left planned nose-down | 92-95 | -27.466 | 0.058 | -0.922
+Final upright | 105-110 | -0.852 | 0.006 | -0.833
+
+Interpretation: live calibration, sign conventions, recording continuity, and firmware angle implementation worked for this capture. Right nose-up changes mean roll by +3.174 degrees compared with preceding right hold; left nose-up changes mean roll by +3.371 degrees compared with preceding left hold. Those are sustained position/estimate changes, not simply random within-hold noise. Handheld motion prevents separating actual off-axis movement from estimation error. The much changed subsequent roll holds also show the test did not establish a fixed measured lean reference.
+Both planned nose-down holds remain approximately pitch-level (-0.202 and -0.922 degrees). This file therefore does not validate combined lean with substantial negative pitch.
+Final upright averages -0.852 degrees roll and -0.833 degrees pitch. Without repeatable physical placement this cannot be called sensor drift or absolute zero error.
+Next precision experiment requires constrained/support-mounted motion and an independent angle reference. Do not tune smoothing or calibration to hide handheld offsets. No firmware change made on the basis of this capture. Sustained cornering acceleration and hardware sample timing remain unvalidated.

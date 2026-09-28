@@ -17,6 +17,16 @@ final class LapLoggerViewModel: ObservableObject {
         if UserDefaults.standard.bool(forKey: "clearHistoryOnLaunch") {
             bluetooth.clearActivityLog()
         }
+        bluetooth.$calibrationProgress.sink { [weak self] progress in
+            guard self?.bluetooth.isNiclaLive == true else { return }
+            self?.calibrationState = progress.active ? .inProgress : .idle
+        }.store(in: &cancellables)
+        bluetooth.$liveSession.sink { [weak self] session in
+            guard let self, self.bluetooth.isNiclaLive else { return }
+            self.sessionState = session.map { $0.active ? .logging : ($0.number == 0 ? .idle : .stopped) } ?? .idle
+            self.currentLap = Int(session?.lap ?? 0)
+            self.sessionNumber = session.flatMap { $0.number == 0 ? nil : Int($0.number) }
+        }.store(in: &cancellables)
         bluetooth.objectWillChange.sink { [weak self] _ in self?.objectWillChange.send() }.store(in: &cancellables)
         bluetooth.$latestStatusMessage.dropFirst().sink { [weak self] in self?.process(status: $0) }.store(in: &cancellables)
     }
@@ -39,8 +49,8 @@ final class LapLoggerViewModel: ObservableObject {
         let parts = status.split(separator: ",", maxSplits: 1).map(String.init)
         guard let kind = parts.first else { return }
         switch kind {
-        case "CALIBRATION_STARTED": calibrationState = .inProgress
-        case "CALIBRATION_COMPLETE", "CALIBRATION_REJECTED_LOGGING", "CALIBRATION_REJECTED_ALREADY_ACTIVE": calibrationState = .idle
+        case "CALIBRATION_STARTED": if !bluetooth.isNiclaLive { calibrationState = .inProgress }
+        case "CALIBRATION_TIMEOUT", "READY_TO_CALIBRATE", "SENSOR_FAULT", "CALIBRATION_COMPLETE", "CALIBRATION_REJECTED_LOGGING", "CALIBRATION_REJECTED_ALREADY_ACTIVE": if !bluetooth.isNiclaLive { calibrationState = .idle }
         case "SESSION_STARTED":
             sessionState = .logging
             sessionNumber = parts.count == 2 ? Int(parts[1]) : nil

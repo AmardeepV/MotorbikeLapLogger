@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct TelemetryView: View {
-    let viewModel: LapLoggerViewModel
+    @ObservedObject var viewModel: LapLoggerViewModel
 
     private let columns = [GridItem(.flexible()), GridItem(.flexible())]
 
@@ -35,9 +35,9 @@ struct TelemetryView: View {
 
     private var isAvailable: Bool { viewModel.bluetooth.telemetryIsAvailable }
     private var telemetry: LeanTelemetry? { viewModel.bluetooth.telemetry }
-    private var currentLean: String { isAvailable && telemetry != nil ? String(format: "%.1f°", telemetry!.currentLeanDegrees) : "Unavailable" }
-    private var maximumLeft: String { isAvailable && telemetry != nil ? String(format: "%.1f°", telemetry!.maximumLeftLeanDegrees) : "Unavailable" }
-    private var maximumRight: String { isAvailable && telemetry != nil ? String(format: "%.1f°", telemetry!.maximumRightLeanDegrees) : "Unavailable" }
+    private var currentLean: String { isAvailable && telemetry != nil ? String(format: "%.1f°", abs(telemetry!.currentLeanDegrees)) : "Unavailable" }
+    private var maximumLeft: String { isAvailable && telemetry != nil ? String(format: "%.1f°", abs(telemetry!.maximumLeftLeanDegrees)) : "Unavailable" }
+    private var maximumRight: String { isAvailable && telemetry != nil ? String(format: "%.1f°", abs(telemetry!.maximumRightLeanDegrees)) : "Unavailable" }
     private var availabilityDetail: String { isAvailable ? "ESP32 · updated now" : "No recent BLE packet" }
     private var telemetryDescription: String { isAvailable ? "Receiving live lean-angle telemetry from the ESP32." : "Lean telemetry is unavailable or stale. Connect and check the logger." }
     private var currentLapValue: String { viewModel.currentLap > 0 ? "\(viewModel.currentLap)" : "Unavailable" }

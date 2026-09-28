@@ -1,0 +1,48 @@
+Nicla stationary sensor diagnostic
+
+Capture checks: passed (host capture checks only)
+Maximum host polling gap: 135678 us
+Timing is host delivery timing, not sensor acquisition timing.
+A clean capture cannot rule out losses upstream of the Arduino callbacks.
+Configuration read failures (retained even if a retry succeeded): 1
+# CONFIG_READ_FAILURE,phase=start,sensor_id=4,attempt=1,status=-5,bytes=4,expected_bytes=12
+
+Accelerometer (sensor 4, Bosch-corrected output)
+  startup (0-5 s): 487 rows
+    X counts: mean=8108.784394, min=7910.000000, max=8180.000000, population_sd=100.587375
+    Y counts: mean=-55.351129, min=-73.000000, max=-38.000000, population_sd=6.479625
+    Z counts: mean=276.445585, min=256.000000, max=296.000000, population_sd=7.322199
+    magnitude counts: mean=8113.688998, min=7914.915034, max=8184.954795, population_sd=100.670415
+    rows at signed-16-bit rails: 0 (not a complete saturation detector)
+    mean delivered rate: 100.108 Hz; median/max delivery gap: 10062/11085 us
+  stationary window (5-35 s): 2983 rows
+    X counts: mean=8164.718740, min=8140.000000, max=8185.000000, population_sd=6.085022
+    Y counts: mean=-56.538384, min=-83.000000, max=-31.000000, population_sd=6.251982
+    Z counts: mean=279.841100, min=257.000000, max=302.000000, population_sd=6.374939
+    magnitude counts: mean=8169.713545, min=8145.050276, max=8190.072161, population_sd=6.089225
+    rows at signed-16-bit rails: 0 (not a complete saturation detector)
+    mean delivered rate: 99.410 Hz; median/max delivery gap: 10060/10317 us
+    nominal conversion: count * 0.000122070 g
+    magnitude g: mean=0.997279, min=0.994269, max=0.999765, population_sd=0.000743
+  magnitude below 75% of steady median: 0 rows (0 during startup)
+  first low-magnitude (sequence, host seconds): 
+  This threshold is an investigation aid; no rows were removed.
+
+Gyroscope (sensor 13, Bosch-corrected output)
+  startup (0-5 s): 486 rows
+    X counts: mean=1.185185, min=-3.000000, max=15.000000, population_sd=4.047387
+    Y counts: mean=-2.557613, min=-24.000000, max=3.000000, population_sd=6.477547
+    Z counts: mean=-1.312757, min=-13.000000, max=3.000000, population_sd=3.721935
+    magnitude counts: mean=4.275109, min=0.000000, max=29.529646, population_sd=7.974057
+    rows at signed-16-bit rails: 0 (not a complete saturation detector)
+    mean delivered rate: 99.902 Hz; median/max delivery gap: 10062/11084 us
+  stationary window (5-35 s): 2983 rows
+    X counts: mean=-0.031177, min=-5.000000, max=5.000000, population_sd=0.897365
+    Y counts: mean=-0.038217, min=-5.000000, max=4.000000, population_sd=1.242024
+    Z counts: mean=-0.047603, min=-4.000000, max=4.000000, population_sd=0.989255
+    magnitude counts: mean=1.530467, min=0.000000, max=5.385165, population_sd=0.994425
+    rows at signed-16-bit rails: 0 (not a complete saturation detector)
+    mean delivered rate: 99.410 Hz; median/max delivery gap: 10060/10317 us
+    nominal conversion: count * 0.030517578 deg/s
+    residual gyro mean XYZ (deg/s): -0.000951, -0.001166, -0.001453
+    Interpret as residual bias only if the enclosure was stationary; no correction applied.

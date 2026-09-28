@@ -9,6 +9,7 @@
 import SwiftUI
 
 struct ContentView: View {
+    @Environment(\.scenePhase) private var scenePhase
     @StateObject private var viewModel = LapLoggerViewModel()
     @State private var selectedPage: AppPage = .dashboard
     @State private var showMenu = false
@@ -37,6 +38,9 @@ struct ContentView: View {
             .padding(.trailing, 16)
             .padding(.top, 10)
             .zIndex(100)
+        }
+        .onChange(of: scenePhase) { _, phase in
+            if phase == .active { viewModel.bluetooth.invalidateLiveData() }
         }
         .tint(AppTheme.accent)
         .preferredColorScheme(.dark)

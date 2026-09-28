@@ -1,0 +1,30 @@
+Six-axis quaternion bench capture (Game Rotation Vector ID 37)
+startup: 241 quaternion rows; norm min/mean/max 0.999964/0.999967/0.999974; outside 1 +/- 0.01: 0
+post-startup: 2730 quaternion rows; norm min/mean/max 0.999926/0.999961/0.999999; outside 1 +/- 0.01: 0
+Sensor 4: 49.642 delivered Hz; maximum delivery gap 20447 us
+Sensor 13: 49.642 delivered Hz; maximum delivery gap 20328 us
+Sensor 37: 49.642 delivered Hz; maximum delivery gap 20446 us
+Adjacent negative quaternion dot products: 0 (q and -q can represent the same pose)
+# CONFIG_READ_FAILURE,phase=start,sensor_id=4,attempt=1,status=-5,bytes=4,expected_bytes=12
+# END,accel_events=2971,gyro_events=2973,quaternion_events=2971,queue_dropped=0,malformed=0,max_poll_gap_us=148023
+# EXPERIMENT,quaternion-roll
+Checks: passed (host capture and quaternion norm only)
+Quaternion XYZW is scaled by 1/16384. Norms were checked before any normalization.
+Game RV accuracy=0 is not a confidence estimate. No absolute heading reference is provided.
+No lean, Euler angles or mounting transform applied: quaternion direction/frame still needs bench validation.
+Use observed motion/hold intervals, not prompt times alone. Host timestamps are not acquisition timestamps.
+
+Exploratory roll convention check (not independent angle calibration):
+Candidate convention: Hamilton XYZW quaternion maps reported sensor coordinates to reference coordinates. Predicted stationary upward specific-force direction in reported coordinates is R(q)^T * (0,0,1). After the confirmed motorcycle mapping, up_bike=(-up_reported.x,-up_reported.y,up_reported.z); roll=atan2(up_bike.y,up_bike.z). Norms were checked first, then normalized for this calculation.
+
+Hold interval | quaternion roll mean / SD | accelerometer tilt mean / SD (degrees)
+Initial upright 5-10 s | +0.74979 / 0.00884 | +0.75042 / 0.03551
+Right hold 18-22 s | +32.37461 / 0.09632 | +32.40074 / 0.12029
+Middle upright 29-32 s | +0.26986 / 0.00962 | +0.26151 / 0.03675
+Left hold 40-44 s | -28.08970 / 0.13170 | -28.13022 / 0.16360
+Final upright 54-60 s | +0.26331 / 0.00636 | +0.26070 / 0.03688
+
+Interpretation: candidate gives positive right lean, negative left lean, and near-upright returns. Using R(q)*(0,0,1) instead reverses the roll signs in this test and does not match the stationary acceleration direction. This constrains the convention for the observed roll motion, but does not establish all yaw/pitch behavior or reference-frame definitions.
+Initial and final roll differ by approximately -0.49 degrees; accelerometer tilt changes similarly. This is compatible with different physical placement and is not by itself a measurement of gyro drift. Holds contain some small movements.
+Agreement between quaternion and acceleration-derived tilt is an internal consistency check: Game RV itself uses the accelerometer, so this is not proof of absolute angle accuracy. No known-angle reference or riding dynamics were tested. No calibration or firmware lean algorithm changed.
+Next: use --quaternion-test pitch with the same firmware; inspect nose-up/nose-down and residual roll. Existing initial configuration-read timeout remains unresolved.

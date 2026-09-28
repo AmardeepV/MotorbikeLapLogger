@@ -1,0 +1,31 @@
+Live lean combined-motion capture analysis
+nicla-lean-20260926-110938-100734.log
+Ignored 10879 pre-marker bytes from prior serial output; one NICLA_LEAN_V1 run.
+First displayed VALID 8.092675 seconds; statuses {'STARTUP': 49, 'CALIBRATING': 30, 'VALID': 1113}. No later stale/invalid/fault rows. Calibration ID stays 1.
+Firmware estimator replay maximum live angle difference 0.0005000 degrees, consistent with display rounding. This checks code consistency, not physical accuracy.
+Sensor 4: 5958 rows, sequences 1-5958, sequence gaps 0, backwards times 0, max delivery gap 22544 us.
+Sensor 13: 5959 rows, sequences 1-5959, sequence gaps 0, backwards times 0, max delivery gap 20358 us.
+Sensor 37: 5959 rows, sequences 1-5959, sequence gaps 0, backwards times 0, max delivery gap 21300 us.
+Quaternion norm min/max 0.999920501/0.999998942.
+Configurations match start/end: 50 Hz, latency 0, acceleration 4 g, gyro 1000 deg/s. Event counts match END.
+# CONFIG_READ_FAILURE,phase=start,sensor_id=4,attempt=1,status=-5,bytes=4,expected_bytes=12
+# END,accel_events=5958,gyro_events=5959,quaternion_events=5959,queue_dropped=0,malformed=0,max_poll_gap_us=149006
+
+Observed hold windows inspected using two-second motion summaries. Times are relative to first displayed VALID.
+Phase | seconds | mean roll | roll population SD | mean pitch | pitch population SD (degrees)
+Initial upright | 0-5 | +0.003 | 0.007 | -0.001 | 0.010
+First lean, negative | 12-15 | -24.942 | 0.227 | -0.170 | 0.010
+First nose-up | 22-25 | -26.716 | 0.089 | +14.955 | 0.202
+First returned pitch-level | 32-35 | -26.212 | 0.071 | -0.007 | 0.014
+First nose-down | 42-45 | -26.128 | 0.207 | -15.052 | 0.188
+Middle upright | 52-54 | -0.165 | 0.013 | +0.033 | 0.009
+Second lean, positive | 62-65 | +25.009 | 0.245 | +0.602 | 0.040
+Second nose-up | 72-75 | +26.363 | 0.287 | +15.143 | 0.430
+Second returned pitch-level | 82-85 | +27.016 | 0.136 | +0.666 | 0.017
+Second nose-down | 92-95 | +26.284 | 0.113 | -14.211 | 0.164
+Final upright | 105-110 | -0.498 | 0.007 | +0.102 | 0.010
+
+Interpretation: this capture includes substantial positive and negative pitch (about +/-15 degrees) at each lean sign. Lean remains in the approximately 25-27 degree range during the selected holds. The missing nose-down part of prior trials is now present.
+Observed lean order is negative first, positive second, opposite to the planned right-then-left cue labels under the established right-positive convention. Report the observed sign rather than treating cue labels as ground truth. No sign change or axis remapping is justified by this run alone.
+Within-run differences of roughly 1-2 degrees between some holds cannot be attributed solely to the estimator because lean was not held against an independent fixed reference. The small final upright offset is not by itself a drift measurement. This supports functional combined lean/pitch behavior but does not establish absolute angle accuracy or performance under sustained cornering acceleration.
+Bluetooth work remains paused at user request. No firmware changes made for this analysis. No further repeat is needed merely to demonstrate both signs of pitch while leaning.

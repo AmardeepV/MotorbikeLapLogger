@@ -23,7 +23,7 @@ struct BluetoothView: View {
                 }
                 Section("Discovered devices") {
                     if viewModel.bluetooth.discoveredDevices.isEmpty {
-                        Text(viewModel.isScanning ? "Searching for nearby lap loggers…" : "Start a scan to find the ESP32 logger.").foregroundStyle(.secondary)
+                        Text(viewModel.isScanning ? "Searching for nearby lap loggers…" : "Start a scan to find Nicla Motion.").foregroundStyle(.secondary)
                     } else {
                         ForEach(viewModel.bluetooth.discoveredDevices) { device in
                             HStack {
